@@ -106,11 +106,13 @@
             </LinearLayout>
 
 
+            <!-- 隐藏配置文件区域 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:padding="4dip">
+                android:padding="4dip"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -163,6 +165,7 @@
 
             </LinearLayout>
 
+            <!-- 隐藏重置按钮 -->
             <TextView
                 android:id="@+id/restoreDefaultProfile"
                 style="@style/textLink"
@@ -175,7 +178,7 @@
                 android:singleLine="true"
                 android:text="@string/restore_defaults_short"
                 android:textSize="@dimen/text_title"
-                android:visibility="visible" />
+                android:visibility="gone" />
 
 
             <LinearLayout
@@ -1409,6 +1412,7 @@
             <!-- end of  "Prefs. > Preferences > Widget" -->
 
 
+            <!-- 隐藏备份区域 -->
             <TextView
                 android:id="@+id/section3"
                 style="@style/textLinkWhite"
@@ -1416,13 +1420,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dip"
                 android:background="@drawable/bg_search_second"
-                android:text="@string/import_or_export_application_settings_to_json_file" />
+                android:text="@string/import_or_export_application_settings_to_json_file"
+                android:visibility="gone" />
 
             <TextView
                 android:padding="4dip"
                 android:text="@string/msg_migration"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+
 
 
 
@@ -1430,7 +1437,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/importButton"
@@ -1474,11 +1481,13 @@
                     android:text="@string/automatic_export_backup" />
             </FrameLayout>
 
+            <!-- 隐藏配置文件路径 -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -1503,11 +1512,13 @@
                 android:layout_marginBottom="1dip"
                 android:background="@color/lt_grey_alpha" />
 
+            <!-- 隐藏字体路径 -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -1524,11 +1535,13 @@
                     android:text="[]" />
             </LinearLayout>
 
+            <!-- 隐藏下载路径 -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -1591,11 +1604,13 @@
                     android:text="[]" />
             </LinearLayout>
 
+            <!-- 隐藏音频文件路径 -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -1706,6 +1721,7 @@
 
             </LinearLayout>
 
+            <!-- 隐藏应用信息区域 -->
             <TextView
                 android:id="@+id/section6"
                 style="@style/textLinkWhite"
@@ -1713,7 +1729,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dip"
                 android:background="@drawable/bg_search_second"
-                android:text="Product: Lirbi Free" />
+                android:text="Product: Lirbi Free"
+                android:visibility="gone" />
 
             <LinearLayout
 
@@ -1722,7 +1739,7 @@
                 android:gravity="left|center_vertical"
                 android:orientation="horizontal"
                 android:padding="4dip"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/imageView1"
@@ -1761,14 +1778,16 @@
                 android:layout_marginTop="4dip"
                 android:padding="0dp"
                 android:singleLine="true"
-                android:text="@string/what_is_new_in" />
+                android:text="@string/what_is_new_in"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dip"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -1800,7 +1819,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="7dip"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="100dip"
@@ -1819,7 +1839,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="100dip"
@@ -1884,6 +1905,7 @@
                 android:visibility="gone" />
 
 
+            <!-- 隐藏Google Play反馈评分提示 -->
             <LinearLayout
 
                 android:layout_width="match_parent"
@@ -1891,7 +1913,7 @@
                 android:gravity="left|center_vertical"
                 android:orientation="horizontal"
                 android:padding="4dip"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <ImageView
                     android:layout_width="@dimen/wh_button"

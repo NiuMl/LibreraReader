@@ -114,15 +114,15 @@ cp -rpv $SRC/pi.c $MUPDF_ROOT/thirdparty/openjpeg/src/lib/openjp2/pi.c
 
 cd $MUPDF_JAVA
 
-NDK_VERSION="30.0.14904198"
-FDRIOD_NDK_VERSION="21.4.7075529"
+NDK_VERSION="28.2.13676358"
+FDRIOD_NDK_VERSION="28.2.13676358"
 
 if [ "$(uname)" == "Darwin" ]; then
   FDRIOD_NDK_VERSION=$NDK_VERSION
 fi
 
-PATH1=/Users/ivanivanenko/Library/Android/sdk/ndk
-PATH2=/home/dev/Android/Sdk/ndk
+PATH1=/d/AppData/Android/studio_sdk/ndk
+PATH2=/d/AppData/Android/studio_sdk/ndk
 
 if [ ! -d "$PATH1/$NDK_VERSION" ]; then
     echo "-- NDK ERROR --"

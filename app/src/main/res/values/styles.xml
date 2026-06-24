@@ -10,6 +10,8 @@
     <style name="StyledIndicatorsBlack" parent="@android:style/Theme.Black.NoTitleBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowBackground">#F8B295</item>
+        <item name="android:colorBackground">#F8B295</item>
     </style>
 
 
@@ -60,7 +62,7 @@
         <item name="android:padding">3dip</item>
         <item name="android:layout_marginLeft">1.5dip</item>
         <item name="android:layout_marginRight">1.5dip</item>
-        <item name="android:tint">@color/white</item>
+        <item name="android:tint">@color/black</item>
     </style>
 
     <style name="buttonWhiteClose" parent="buttonWhite">

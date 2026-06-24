@@ -1366,22 +1366,23 @@ public class DocumentWrapperUI {
         int textColor = TintUtil.getStatusBarColor();
 
         TintUtil.setTintText(bookName, textColor);
-        TintUtil.setTintImageWithAlpha(textToSpeachTop, textColor);
-        TintUtil.setTintImageWithAlpha(lockUnlockTop, textColor);
-        TintUtil.setTintImageWithAlpha(nextScreenType, textColor);
+        TintUtil.setTintImageNoAlpha(textToSpeachTop, textColor);
+        TintUtil.setTintImageNoAlpha(lockUnlockTop, textColor);
+        TintUtil.setTintImageNoAlpha(nextScreenType, textColor);
         TintUtil.setTintText(pagesCountIndicator, textColor);
         TintUtil.setTintText(currentTime, textColor);
         TintUtil.setTintText(batteryLevel, textColor);
-        TintUtil.setTintText(reverseKeysIndicator, ColorUtils.setAlphaComponent(textColor, 200));
+        TintUtil.setTintText(reverseKeysIndicator, textColor);
 
-        TintUtil.setTintImageWithAlpha(goToPage1Top, textColor);
-        TintUtil.setTintImageWithAlpha((ImageView) closeTop, textColor);
-        TintUtil.setTintImageWithAlpha(toolBarButton, textColor);
-        TintUtil.setTintImageWithAlpha(clockIcon, textColor).setImageAlpha(200);
-        TintUtil.setTintImageWithAlpha(batteryIcon, textColor).setImageAlpha(200);
+        TintUtil.setTintImageNoAlpha(goToPage1Top, textColor);
+        TintUtil.setTintImageNoAlpha((ImageView) closeTop, textColor);
+        TintUtil.setTintImageNoAlpha(toolBarButton, textColor);
+        TintUtil.setTintImageNoAlpha(clockIcon, textColor);
+        TintUtil.setTintImageNoAlpha(batteryIcon, textColor);
 
         //int titleColor = AppState.get().isDayNotInvert ? MagicHelper.otherColor(AppState.get().colorDayBg, -0.05f) : MagicHelper.otherColor(AppState.get().colorNigthBg, 0.05f);
         titleBar.setBackgroundColor(TintUtil.color);
+        TintUtil.setTintBgSimple(a.findViewById(R.id.bottomBar1), AppState.get().transparencyUI);
 
         int progressColor = TintUtil.color;
 

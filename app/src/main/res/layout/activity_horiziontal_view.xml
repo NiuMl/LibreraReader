@@ -380,8 +380,7 @@
             android:id="@+id/bottomBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:background="#96aa39">
+            android:layout_alignParentBottom="true">
 
             <include layout="@layout/document_footer" />
         </FrameLayout>

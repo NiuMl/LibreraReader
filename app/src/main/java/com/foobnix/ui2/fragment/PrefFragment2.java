@@ -1760,11 +1760,12 @@ public class PrefFragment2 extends UIFragment {
         TxtUtils.underlineTextView(inflate.findViewById(R.id.importButton))
                 .setOnClickListener(v -> PrefDialogs.importDialog(getActivity()));
 
-        TxtUtils.underlineTextView(inflate.findViewById(R.id.exportButton))
-                .setOnClickListener(v -> PrefDialogs.exportDialog(getActivity()));
+        // 注释掉备份和迁移按钮
+        // TxtUtils.underlineTextView(inflate.findViewById(R.id.exportButton))
+        //         .setOnClickListener(v -> PrefDialogs.exportDialog(getActivity()));
 
-        TxtUtils.underlineTextView(inflate.findViewById(R.id.migrationButton))
-                .setOnClickListener(v -> PrefDialogs.migrationDialog(getActivity()));
+        // TxtUtils.underlineTextView(inflate.findViewById(R.id.migrationButton))
+        //         .setOnClickListener(v -> PrefDialogs.migrationDialog(getActivity()));
 
         // folders
 

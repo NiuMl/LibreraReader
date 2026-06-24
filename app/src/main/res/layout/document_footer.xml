@@ -89,7 +89,7 @@
                 android:layout_weight="0"
                 android:contentDescription="@string/search"
                 android:src="@drawable/glyphicons_28_search"
-                android:textColor="#ffffff" />
+                android:textColor="#000000" />
 
             <ImageView
                 android:id="@+id/onRecent"
@@ -159,7 +159,7 @@
                 android:singleLine="true"
                 android:text="@string/by_screans"
                 android:textAllCaps="true"
-                android:textColor="#ffffff"
+                android:textColor="#000000"
                 android:textSize="14sp" />
         </LinearLayout>
 
@@ -182,7 +182,7 @@
                 android:gravity="center"
                 android:minEms="2"
                 android:text="--"
-                android:textColor="#ffffff"
+                android:textColor="#000000"
                 android:textSize="14sp"
                 android:textStyle="normal" />
 
@@ -209,7 +209,7 @@
                 android:gravity="center"
                 android:minEms="2"
                 android:text="--"
-                android:textColor="#ffffff"
+                android:textColor="#000000"
                 android:textSize="14sp"
                 android:textStyle="normal" />
         </LinearLayout>
@@ -259,7 +259,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/mode_vertical"
-                android:textColor="#ffffff"
+                android:textColor="#000000"
                 android:textSize="13sp"
                 android:textStyle="normal" />
 

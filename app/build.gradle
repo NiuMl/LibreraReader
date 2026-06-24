@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.googleServices)
+    //alias(libs.plugins.googleServices)
 }
 
 def taskName = getGradle().getStartParameter().getTaskRequests().toString()
@@ -67,10 +67,10 @@ android {
 
     signingConfigs {
         release {
-            storeFile file(RELEASE_STORE_FILE)
-            storePassword RELEASE_STORE_PASSWORD
-            keyAlias RELEASE_KEY_ALIAS
-            keyPassword RELEASE_KEY_PASSWORD
+            //storeFile file(RELEASE_STORE_FILE)
+            //storePassword RELEASE_STORE_PASSWORD
+            //keyAlias RELEASE_KEY_ALIAS
+            //keyPassword RELEASE_KEY_PASSWORD
         }
     }
 
@@ -78,7 +78,7 @@ android {
         release {
             minifyEnabled = false
             //shrinkResources = false
-            signingConfig = signingConfigs.release
+            //signingConfig = signingConfigs.release
             debuggable = false
         }
         debug {

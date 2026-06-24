@@ -299,9 +299,9 @@ public class SlidingTabLayout extends HorizontalScrollView {
                     tabTitleView.setTextColor(TintUtil.color);
                 } else {
                     if(drawable!=null) {
-                        TintUtil.setDrawableTint(drawable, Color.WHITE);
+                        TintUtil.setDrawableTint(drawable, Color.BLACK);
                     }
-                    tabTitleView.setTextColor(Color.WHITE);
+                    tabTitleView.setTextColor(Color.BLACK);
                 }
 
                 //tabView.setOnClickListener(tabClickListener);
@@ -381,8 +381,8 @@ public class SlidingTabLayout extends HorizontalScrollView {
                 TintUtil.setDrawableTint(drawable, TintUtil.color);
                 childAt.setTextColor(TintUtil.color);
             } else {
-                childAt.setTextColor(myColor);
-                TintUtil.setDrawableTint(drawable, myColor);
+                childAt.setTextColor(Color.BLACK);
+                TintUtil.setDrawableTint(drawable, Color.BLACK);
             }
         }
     }

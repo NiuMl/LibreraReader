@@ -5,9 +5,9 @@
     <color name="alpa_90">#90000000</color>
     <color name="alpa_bb">#bb000000</color>
     <color name="alpa_ee">#ee000000</color>
-    <color name="foobnix_dark_blue">#000080</color>
-    <color name="foobnix_light_blue">#0000ff</color>
-    <color name="foobnix_light_blue_alfa">#aa0000ff</color>
+    <color name="foobnix_dark_blue">#20B2AA</color>
+    <color name="foobnix_light_blue">#48D1CC</color>
+    <color name="foobnix_light_blue_alfa">#aa48D1CC</color>
     
     <color name="green_msg">#2ECC71</color>
     <color name="red_msg">#EF4444</color>
@@ -29,15 +29,15 @@
    
     
     <color name="tint_white">#F5F5F5</color>
-    <color name="tint_blue">#03A9F4</color>
-    <color name="tint_blue_alpha">#aa03A9F4</color>
-    <color name="tint_gray">#009688</color>
-    <color name="tint_red">#B71C1C</color>
-    <color name="tint_yellow">#ffad25</color>
+    <color name="tint_blue">#4ECDC4</color>
+    <color name="tint_blue_alpha">#aa4ECDC4</color>
+    <color name="tint_gray">#000000</color>
+    <color name="tint_red">#FF6B6B</color>
+    <color name="tint_yellow">#FFE66D</color>
     
     <color name="tint_divider">#30ffffff</color>
     
-    <color name="tint_selector">#aa03A9F4</color>
+    <color name="tint_selector">#aa4ECDC4</color>
 
     
     <color name="color_test">#3949AB</color>

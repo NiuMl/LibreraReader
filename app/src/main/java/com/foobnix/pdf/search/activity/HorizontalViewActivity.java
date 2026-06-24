@@ -1336,6 +1336,8 @@ public class HorizontalViewActivity extends AdsFragmentActivity {
         progressDraw.getLayoutParams().height = Dips.dpToPx(AppState.get().progressLineHeight);
         progressDraw.requestLayout();
 
+        TintUtil.setTintBgSimple(bottomBar, AppState.get().transparencyUI);
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
