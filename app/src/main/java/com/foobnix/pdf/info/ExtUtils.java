@@ -1826,8 +1826,11 @@ public class ExtUtils {
 
             int nread;
             byte[] buf = new byte[4096];
-            while ((nread = fis.read(buf)) > 0 && !detector.isDone()) {
+            long totalRead = 0;
+            long maxRead = 1024 * 100;
+            while ((nread = fis.read(buf)) > 0 && !detector.isDone() && totalRead < maxRead) {
                 detector.handleData(buf, 0, nread);
+                totalRead += nread;
             }
             detector.dataEnd();
 

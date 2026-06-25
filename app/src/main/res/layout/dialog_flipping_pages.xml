@@ -49,14 +49,22 @@
             android:id="@+id/flippingStop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/to_stop" />
+            android:text="@string/to_stop"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:padding="5dip"
+            android:minWidth="70dip" />
 
         <Button
             android:id="@+id/flippingStart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dip"
-            android:text="@string/start" />
+            android:text="@string/start"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:padding="5dip"
+            android:minWidth="70dip" />
     </LinearLayout>
 
 </LinearLayout>

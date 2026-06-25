@@ -166,7 +166,7 @@
    <string name="export_bookmarks">导出</string>
    <string name="simple_scroll_animation">显示翻页动画(滚动)</string>
    <string name="___TABS___SECTION___"></string>
-   <string name="library">书库</string>
+   <string name="library">本地</string>
    <string name="extracting_information_from_books">建立索引</string>
    <string name="no_author">无作者</string>
    <string name="no_serie">无丛书</string>
@@ -685,4 +685,19 @@
    <string name="display_alert_if_cropping_is_on">如果裁剪功能已开启，则显示警告。</string>
    <string name="scan_for_new_books_at_launch">发布会上扫描即可查看新书。</string>
    <string name="show_contrast_and_brightness_button">显示对比度和亮度按钮</string>
+   <string name="private_domain">私域</string>
+   <string name="search_novels">搜索小说...</string>
+   <string name="failed_to_load_categories">加载分类失败</string>
+   <string name="no_novels_found">未找到小说</string>
+   <string name="failed_to_load_novels">加载小说失败</string>
+   <string name="failed_to_load_content">加载内容失败</string>
+   <string name="host">域名或IP</string>
+   <string name="host_hint">192.168.1.8</string>
+   <string name="port_hint">5000</string>
+   <string name="username">用户名</string>
+   <string name="username_hint">输入用户名</string>
+   <string name="password_hint">输入密码</string>
+   <string name="login_success">登录成功</string>
+   <string name="login_failed">登录失败</string>
+   <string name="host_or_port_empty">域名或IP、端口号不能为空</string>
 </resources>

@@ -46,6 +46,7 @@ public class CacheZipUtils {
     public static File CACHE_RECENT;
     public static File CACHE_TEMP;
     public static File ATTACHMENTS_CACHE_DIR;
+    public static File CACHE_TXT_DIR;
     static Pair<Boolean, String> cacheRes;
     static String cacheFile;
 
@@ -61,6 +62,7 @@ public class CacheZipUtils {
         CACHE_WEB = new File(externalCacheDir, "WEB");
         CACHE_RECENT = new File(externalCacheDir, "Recent");
         CACHE_TEMP = new File(externalCacheDir, "Temp");
+        CACHE_TXT_DIR = new File(externalCacheDir, "TxtCache");
 
         CacheZipUtils.createAllCacheDirs();
         CacheDir.createCacheDirs();
@@ -78,6 +80,9 @@ public class CacheZipUtils {
         }
         if (!CACHE_TEMP.exists()) {
             CACHE_TEMP.mkdirs();
+        }
+        if (!CACHE_TXT_DIR.exists()) {
+            CACHE_TXT_DIR.mkdirs();
         }
     }
 

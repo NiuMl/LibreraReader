@@ -19,11 +19,11 @@ public class TxtContext extends PdfContext {
         try {
             CacheZipUtils.emptyAllCacheDirs();
             if (AppState.get().isPreText) {
-                extractFile = TxtExtract.extract(fileName, CacheZipUtils.CACHE_BOOK_DIR.getPath());
+                extractFile = TxtExtract.extract(fileName, CacheZipUtils.CACHE_TXT_DIR.getPath());
                 MuPdfDocument muPdfDocument = new MuPdfDocument(this, MuPdfDocument.FORMAT_PDF, extractFile, "");
                 return muPdfDocument;
             }else {
-                extractFile = TxtExtract.extract1(fileName, CacheZipUtils.CACHE_BOOK_DIR.getPath());
+                extractFile = TxtExtract.extract1(fileName, CacheZipUtils.CACHE_TXT_DIR.getPath());
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

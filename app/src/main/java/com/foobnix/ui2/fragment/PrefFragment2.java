@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -199,6 +200,21 @@ public class PrefFragment2 extends UIFragment {
             profileLetter.setContentDescription(p + " " + getString(R.string.profile));
         }
 
+        TextView tabsDefaulBtn = inflate.findViewById(R.id.tabsDefaul);
+        TextView tabsApplyBtn = inflate.findViewById(R.id.tabsApply);
+        if (tabsDefaulBtn != null && tabsApplyBtn != null) {
+            GradientDrawable btnBgDefault = new GradientDrawable();
+            btnBgDefault.setShape(GradientDrawable.RECTANGLE);
+            btnBgDefault.setCornerRadius(Dips.dpToPx(8));
+            btnBgDefault.setColor(AppState.get().tintColor);
+            GradientDrawable btnBgApply = new GradientDrawable();
+            btnBgApply.setShape(GradientDrawable.RECTANGLE);
+            btnBgApply.setCornerRadius(Dips.dpToPx(8));
+            btnBgApply.setColor(AppState.get().tintColor);
+            tabsDefaulBtn.setBackgroundDrawable(btnBgDefault);
+            tabsApplyBtn.setBackgroundDrawable(btnBgApply);
+        }
+
         if (AppState.get().appTheme == AppState.THEME_INK) {
             TxtUtils.setInkTextView(inflate.getRootView());
         }
@@ -373,6 +389,11 @@ public class PrefFragment2 extends UIFragment {
                         continue;
                     }
 
+                    // 隐藏"网络"标签选项
+                    if (tab == UITab.OpdsFragment) {
+                        continue;
+                    }
+
                     View library = LayoutInflater.from(getActivity())
                                                  .inflate(R.layout.item_tab_line, null, false);
                     if (AppState.get().appTheme == AppState.THEME_DARK_OLED || AppState.get().appTheme == AppState.THEME_DARK) {
@@ -452,6 +473,19 @@ public class PrefFragment2 extends UIFragment {
                 dragLinear.run();
             }
         });
+
+        TextView tabsDefaulBtn = inflate.findViewById(R.id.tabsDefaul);
+        TextView tabsApplyBtn = inflate.findViewById(R.id.tabsApply);
+        GradientDrawable btnBgDefault = new GradientDrawable();
+        btnBgDefault.setShape(GradientDrawable.RECTANGLE);
+        btnBgDefault.setCornerRadius(Dips.dpToPx(8));
+        btnBgDefault.setColor(AppState.get().tintColor);
+        GradientDrawable btnBgApply = new GradientDrawable();
+        btnBgApply.setShape(GradientDrawable.RECTANGLE);
+        btnBgApply.setCornerRadius(Dips.dpToPx(8));
+        btnBgApply.setColor(AppState.get().tintColor);
+        tabsDefaulBtn.setBackgroundDrawable(btnBgDefault);
+        tabsApplyBtn.setBackgroundDrawable(btnBgApply);
 
         TxtUtils.underlineTextView(inflate.findViewById(R.id.tabsDefaul))
                 .setOnClickListener(new OnClickListener() {

@@ -9,6 +9,7 @@ import com.foobnix.ui2.fragment.FavoritesFragment2;
 import com.foobnix.ui2.fragment.GoogleDriveFragment2;
 import com.foobnix.ui2.fragment.OpdsFragment2;
 import com.foobnix.ui2.fragment.PrefFragment2;
+import com.foobnix.ui2.fragment.PrivateDomainFragment2;
 import com.foobnix.ui2.fragment.RecentFragment2;
 import com.foobnix.ui2.fragment.SearchFragment2;
 import com.foobnix.ui2.fragment.UIFragment;
@@ -25,6 +26,7 @@ public enum UITab {
     BookmarksFragment(4, BookmarksFragment2.PAIR.first, BookmarksFragment2.PAIR.second, BookmarksFragment2.class, true), //
     OpdsFragment(5, OpdsFragment2.PAIR.first, OpdsFragment2.PAIR.second, OpdsFragment2.class, true), //
     PrefFragment(6, PrefFragment2.PAIR.first, PrefFragment2.PAIR.second, PrefFragment2.class, true), //
+    PrivateDomainFragment(8, PrivateDomainFragment2.PAIR.first, PrivateDomainFragment2.PAIR.second, PrivateDomainFragment2.class, true), //
     //CloudsFragment(7, CloudsFragment2.PAIR.first, CloudsFragment2.PAIR.second, CloudsFragment2.class, true), //
     GoogleDrive2Fragment(7, GoogleDriveFragment2.PAIR.first, GoogleDriveFragment2.PAIR.second, GoogleDriveFragment2.class, true); //
 

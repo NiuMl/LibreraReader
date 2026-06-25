@@ -240,7 +240,8 @@
                 android:layout_height="@dimen/wh_button"
                 android:layout_weight="0"
                 android:contentDescription="@string/text_to_speech"
-                android:src="@drawable/glyphicons_smileys_100_headphones" />
+                android:src="@drawable/glyphicons_smileys_100_headphones"
+                android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/toPage"

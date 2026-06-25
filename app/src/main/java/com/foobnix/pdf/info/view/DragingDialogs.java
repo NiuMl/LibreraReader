@@ -23,6 +23,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -3276,15 +3277,27 @@ public class DragingDialogs {
                 });
                 flippingInterval.setValueText("" + AppState.get().flippingInterval);
 
-                inflate.findViewById(R.id.flippingStart).setOnClickListener(new OnClickListener() {
+                Button startBtn = inflate.findViewById(R.id.flippingStart);
+                Button stopBtn = inflate.findViewById(R.id.flippingStop);
+
+                GradientDrawable drawable = new GradientDrawable();
+                drawable.setCornerRadius(10);
+                drawable.setColor(AppState.get().tintColor);
+
+                startBtn.setBackground(drawable);
+                stopBtn.setBackground(drawable);
+
+                startBtn.setOnClickListener(new OnClickListener() {
                     @Override public void onClick(View v) {
                         EventBus.getDefault().post(new FlippingStart());
+                        closeDialog();
                     }
                 });
 
-                inflate.findViewById(R.id.flippingStop).setOnClickListener(new OnClickListener() {
+                stopBtn.setOnClickListener(new OnClickListener() {
                     @Override public void onClick(View v) {
                         EventBus.getDefault().post(new FlippingStop());
+                        closeDialog();
                     }
                 });
 

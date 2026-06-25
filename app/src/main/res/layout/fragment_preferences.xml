@@ -1302,13 +1302,15 @@
                 <include layout="@layout/item_tab_line" />
             </com.jmedeisis.draglinearlayout.DragLinearLayout>
 
+            <!-- 隐藏原来的重置和应用按钮，已移到小部件区域底部
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <TextView
-                    android:id="@+id/tabsDefaul"
+                    android:id="@+id/tabsDefaul_old"
                     style="@style/textLink"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -1316,7 +1318,7 @@
                     android:text="@string/restore_defaults_short" />
 
                 <TextView
-                    android:id="@+id/tabsApply"
+                    android:id="@+id/tabsApply_old"
                     style="@style/textLink"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -1324,6 +1326,7 @@
                     android:minWidth="100dip"
                     android:text="@string/apply" />
             </LinearLayout>
+            -->
 
             <TextView
                 android:id="@+id/section5"
@@ -1337,7 +1340,7 @@
             <!-- Prefs. > Preferences > Widget -->
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="vertical">
@@ -1407,6 +1410,38 @@
                         android:layout_height="wrap_content"
                         android:text="2"
                         android:textAllCaps="true" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dip"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/tabsDefaul"
+                        android:layout_width="80dip"
+                        android:layout_height="27dip"
+                        android:gravity="center"
+                        android:text="@string/restore_defaults_short"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        android:background="@drawable/bg_button_rounded" />
+
+                    <Space
+                        android:layout_width="80dip"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/tabsApply"
+                        android:layout_width="80dip"
+                        android:layout_height="27dip"
+                        android:gravity="center"
+                        android:text="@string/apply"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        android:background="@drawable/bg_button_rounded" />
                 </LinearLayout>
             </LinearLayout>
             <!-- end of  "Prefs. > Preferences > Widget" -->

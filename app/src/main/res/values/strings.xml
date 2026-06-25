@@ -685,4 +685,19 @@
    <string name="display_alert_if_cropping_is_on">Display alert if cropping is on</string>
    <string name="scan_for_new_books_at_launch">Scan for new books at launch</string>
    <string name="show_contrast_and_brightness_button">Show Contrast and Brightness button</string>
+   <string name="private_domain">Private Domain</string>
+   <string name="search_novels">Search novels...</string>
+   <string name="failed_to_load_categories">Failed to load categories</string>
+   <string name="no_novels_found">No novels found</string>
+   <string name="failed_to_load_novels">Failed to load novels</string>
+   <string name="failed_to_load_content">Failed to load content</string>
+   <string name="host">Host/IP</string>
+   <string name="host_hint">192.168.1.8</string>
+   <string name="port_hint">5000</string>
+   <string name="username">Username</string>
+   <string name="username_hint">Enter username</string>
+   <string name="password_hint">Enter password</string>
+   <string name="login_success">Login successful</string>
+   <string name="login_failed">Login failed</string>
+   <string name="host_or_port_empty">Host/IP or Port cannot be empty</string>
 </resources>

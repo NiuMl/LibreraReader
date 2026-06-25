@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -336,9 +337,9 @@ public class ShareDialog {
         }
         final boolean isPlaylist = file.getName()
                                        .endsWith(Playlists.L_PLAYLIST);
-        if (!isPlaylist) {
-            items.add(iconText(a, "\uD834\uDD1E", R.string.add_to_playlist));
-        }
+        // if (!isPlaylist) {
+        //     items.add(iconText(a, "\uD834\uDD1E", R.string.add_to_playlist));
+        // }
 
         final boolean isSyncronized = AppsConfig.IS_FDROID || Clouds.isLibreraSyncFile(file);
         if (!isSyncronized) {
@@ -494,8 +495,8 @@ public class ShareDialog {
                     });
                 } else if (AppsConfig.isCloudsEnable && which == i++) {
                     showAddToCloudDialog(a, file);
-                } else if (!isPlaylist && which == i++) {
-                    DialogsPlaylist.showPlaylistsDialog(a, null, file);
+                // } else if (!isPlaylist && which == i++) {
+                //     DialogsPlaylist.showPlaylistsDialog(a, null, file);
                 } else if (!isSyncronized && which == i++) {
                     final File to = new File(AppProfile.SYNC_FOLDER_BOOKS, file.getName());
                     boolean result = IO.copyFile(file, to);
@@ -565,6 +566,12 @@ public class ShareDialog {
             }
 
         });
+
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setCornerRadius(24);
+        drawable.setColor(AppState.get().isDayNotInvert ? Color.WHITE : Color.BLACK);
+        create.getWindow().setBackgroundDrawable(drawable);
+
         create.show();
 //        MyPopupMenu menu = new MyPopupMenu(a, null);
 //

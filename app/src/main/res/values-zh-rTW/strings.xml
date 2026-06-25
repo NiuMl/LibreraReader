@@ -166,7 +166,7 @@
    <string name="export_bookmarks">導出書簽</string>
    <string name="simple_scroll_animation">顯示翻頁動畫</string>
    <string name="___TABS___SECTION___">標籤區域</string>
-   <string name="library">書架</string>
+   <string name="library">本地</string>
    <string name="extracting_information_from_books">書籍資訊</string>
    <string name="no_author">無作者</string>
    <string name="no_serie">無叢書</string>
@@ -685,4 +685,10 @@
    <string name="display_alert_if_cropping_is_on">如果裁切功能已開啟，則顯示警告。</string>
    <string name="scan_for_new_books_at_launch">發表會上掃描即可查看新書。</string>
    <string name="show_contrast_and_brightness_button">顯示對比度和亮度按鈕</string>
+   <string name="private_domain">私域</string>
+   <string name="search_novels">搜尋小說...</string>
+   <string name="failed_to_load_categories">載入分類失敗</string>
+   <string name="no_novels_found">未找到小說</string>
+   <string name="failed_to_load_novels">載入小說失敗</string>
+   <string name="failed_to_load_content">載入內容失敗</string>
 </resources>

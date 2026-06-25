@@ -35,7 +35,14 @@ public class TxtExtract {
     }
 
     public static String extract1(String inputPath, String outputDir) throws IOException {
-        File file = new File(outputDir, inputPath.hashCode() + "_.fb2");
+        File inputFile = new File(inputPath);
+        long inputLastModified = inputFile.lastModified();
+        String cacheFileName = inputPath.hashCode() + "_" + inputLastModified + "_1.fb2";
+        File file = new File(outputDir, cacheFileName);
+
+        if (file.exists()) {
+            return file.getPath();
+        }
 
         String encoding = "UTF-8";
         if (AppState.get().isCharacterEncoding) {
@@ -64,7 +71,7 @@ public class TxtExtract {
                     //trimLine.startsWith("#") ||
                     //trimLine.startsWith("*") ||
                     line.matches("[A-ZА-Я &()_:-]*")) {
-                LOG.d("MATCH", line);
+                // LOG.d("MATCH", line);
                 writer.println("<section><title>");
                 writer.println(line);
                 writer.println("</title></section>");
@@ -82,7 +89,14 @@ public class TxtExtract {
     }
 
     public static String extract(String inputPath, String outputDir) throws IOException {
-        File file = new File(outputDir, AppState.get().isPreText + OUT_FB2_XML);
+        File inputFile = new File(inputPath);
+        long inputLastModified = inputFile.lastModified();
+        String cacheFileName = inputPath.hashCode() + "_" + inputLastModified + "_" + AppState.get().isPreText + OUT_FB2_XML;
+        File cacheFile = new File(outputDir, cacheFileName);
+
+        if (cacheFile.exists()) {
+            return cacheFile.getPath();
+        }
 
         boolean isJSON = inputPath.endsWith(".json");
 
@@ -94,7 +108,7 @@ public class TxtExtract {
         }
 
         BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(inputPath), encoding));
-        PrintWriter writer = new PrintWriter(file);
+        PrintWriter writer = new PrintWriter(cacheFile);
         String line;
 
         writer.println("<!DOCTYPE html>");
@@ -158,14 +172,16 @@ public class TxtExtract {
                 }
 
             }
-            if (isJSON) {
+            if (isJSON && outLn != null) {
                 outLn = outLn.replace(",", ",<br/>");
             }
 
-            outLn = Fb2Extractor.accurateLine(outLn);
-            LOG.d("LINE", outLn);
+            if (outLn != null) {
+                outLn = Fb2Extractor.accurateLine(outLn);
+                // LOG.d("LINE", outLn);
 
-            writer.println(outLn);
+                writer.println(outLn);
+            }
         }
         if (AppState.get().isLineBreaksText) {
             writer.println("</p>");
@@ -179,7 +195,7 @@ public class TxtExtract {
         input.close();
         writer.close();
 
-        return file.getPath();
+        return cacheFile.getPath();
     }
 
     public static String retab(final String text, final int tabstop) {
