@@ -44,46 +44,33 @@ public class TxtExtract {
             return file.getPath();
         }
 
-        String encoding = "UTF-8";
-        if (AppState.get().isCharacterEncoding) {
-            encoding = AppState.get().characterEncoding;
-        } else {
-            encoding = ExtUtils.determineTxtEncoding(new FileInputStream(inputPath));
-        }
-
-        BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(inputPath), encoding));
+        TxtAnalyzer analyzer = TxtAnalyzer.getInstance(inputPath);
+        List<TxtChapter> chapters = analyzer.getChapterList(inputPath);
 
         PrintWriter writer = new PrintWriter(file);
-        String line;
         writer.println("<FictionBook>");
 
-        if (BookCSS.get().isAutoHypens) {
-            HypenUtils.applyLanguage(AppSP.get().hypenLang);
-        }
-
-        while ((line = input.readLine()) != null) {
-            String trimLine = line.toLowerCase();
-            if (line.isEmpty()) {
-                continue;
-            }
-            if (trimLine.startsWith("chapter ") || trimLine.startsWith("глава ") || trimLine.startsWith(
-                    "часть ") || trimLine.startsWith("розділ ") ||
-                    //trimLine.startsWith("#") ||
-                    //trimLine.startsWith("*") ||
-                    line.matches("[A-ZА-Я &()_:-]*")) {
-                // LOG.d("MATCH", line);
-                writer.println("<section><title>");
-                writer.println(line);
-                writer.println("</title></section>");
-            } else {
-                if (BookCSS.get().isAutoHypens && TxtUtils.isNotEmpty(AppSP.get().hypenLang)) {
-                    line = HypenUtils.applyHypnes(line);
+        for (TxtChapter chapter : chapters) {
+            String content = analyzer.getChapterContent(inputPath, chapter);
+            writer.println("<section><title>");
+            writer.println(chapter.title);
+            writer.println("</title>");
+            
+            String[] paragraphs = content.split("\\n\\s*\\n");
+            for (String paragraph : paragraphs) {
+                paragraph = paragraph.trim();
+                if (!paragraph.isEmpty()) {
+                    if (BookCSS.get().isAutoHypens && TxtUtils.isNotEmpty(AppSP.get().hypenLang)) {
+                        paragraph = HypenUtils.applyHypnes(paragraph);
+                    }
+                    writer.println("<p>" + paragraph + "</p>");
                 }
-                writer.println("<p>" + line + "</p>");
             }
+            
+            writer.println("</section>");
         }
+        
         writer.println("</FictionBook>");
-        input.close();
         writer.close();
         return file.getPath();
     }

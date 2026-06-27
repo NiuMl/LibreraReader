@@ -17,7 +17,6 @@ public class TxtContext extends PdfContext {
 
         String extractFile = null;
         try {
-            CacheZipUtils.emptyAllCacheDirs();
             if (AppState.get().isPreText) {
                 extractFile = TxtExtract.extract(fileName, CacheZipUtils.CACHE_TXT_DIR.getPath());
                 MuPdfDocument muPdfDocument = new MuPdfDocument(this, MuPdfDocument.FORMAT_PDF, extractFile, "");

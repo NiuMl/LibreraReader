@@ -1821,16 +1821,20 @@ public class ExtUtils {
     public static String determineTxtEncoding(InputStream fis) {
         String encoding = null;
         try {
-
             UniversalDetector detector = new UniversalDetector(null);
 
+            byte[] buf = new byte[8000];
+            int pos = 0;
             int nread;
-            byte[] buf = new byte[4096];
-            long totalRead = 0;
-            long maxRead = 1024 * 100;
-            while ((nread = fis.read(buf)) > 0 && !detector.isDone() && totalRead < maxRead) {
-                detector.handleData(buf, 0, nread);
-                totalRead += nread;
+            
+            while (pos < buf.length && (nread = fis.read(buf, pos, 1)) > 0) {
+                if (buf[pos] < 0) {
+                    pos++;
+                }
+            }
+            
+            if (pos > 0) {
+                detector.handleData(buf, 0, pos);
             }
             detector.dataEnd();
 
