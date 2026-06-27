@@ -394,6 +394,11 @@ public class PrefFragment2 extends UIFragment {
                         continue;
                     }
 
+                    // 隐藏"收藏"标签选项
+                    if (tab == UITab.StarsFragment) {
+                        continue;
+                    }
+
                     View library = LayoutInflater.from(getActivity())
                                                  .inflate(R.layout.item_tab_line, null, false);
                     if (AppState.get().appTheme == AppState.THEME_DARK_OLED || AppState.get().appTheme == AppState.THEME_DARK) {

@@ -132,7 +132,7 @@ public class AppState {
                     "'#bla':'bla disabled' , " +//
                     "'*(L|l)ibre.':'$1ibréra'}";//
     public static final String TTS_PUNCUATIONS = ".;:!?";
-    public static final String DEFAULTS_TABS_ORDER = "0#1,1#1,2#1,3#1,4#1,5#0,6#0,7#0,8#1";
+    public static final String DEFAULTS_TABS_ORDER = "0#1,1#1,2#1,3#0,4#1,5#0,6#0,7#0,8#1";
     final public static List<Integer> WIDGET_SIZE = Arrays.asList(0, 70, 100, 150, 200, 250);
     public final static int MAX_SPEED = 149;
     public final static int MODE_GRID = 1;
@@ -709,6 +709,9 @@ public class AppState {
             if (!AppState.get().tabsOrder9.contains(UITab.PrivateDomainFragment.index + "#")) {
                 AppState.get().tabsOrder9 = AppState.get().tabsOrder9 + "," + UITab.PrivateDomainFragment.index + "#1";
             }
+
+            AppState.get().tabsOrder9 = AppState.get().tabsOrder9.replace(UITab.StarsFragment.index + "#1",
+                    UITab.StarsFragment.index + "#0");
 
             try {
                 if (TxtUtils.isNotEmpty(AppState.get().lineTTSReplacements)) {
