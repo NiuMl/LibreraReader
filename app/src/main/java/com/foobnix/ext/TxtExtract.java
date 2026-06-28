@@ -13,11 +13,15 @@ import com.foobnix.pdf.info.ExtUtils;
 import com.foobnix.pdf.info.model.BookCSS;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class TxtExtract {
@@ -35,44 +39,7 @@ public class TxtExtract {
     }
 
     public static String extract1(String inputPath, String outputDir) throws IOException {
-        File inputFile = new File(inputPath);
-        long inputLastModified = inputFile.lastModified();
-        String cacheFileName = inputPath.hashCode() + "_" + inputLastModified + "_1.fb2";
-        File file = new File(outputDir, cacheFileName);
-
-        if (file.exists()) {
-            return file.getPath();
-        }
-
-        TxtAnalyzer analyzer = TxtAnalyzer.getInstance(inputPath);
-        List<TxtChapter> chapters = analyzer.getChapterList(inputPath);
-
-        PrintWriter writer = new PrintWriter(file);
-        writer.println("<FictionBook>");
-
-        for (TxtChapter chapter : chapters) {
-            String content = analyzer.getChapterContent(inputPath, chapter);
-            writer.println("<section><title>");
-            writer.println(chapter.title);
-            writer.println("</title>");
-            
-            String[] paragraphs = content.split("\\n\\s*\\n");
-            for (String paragraph : paragraphs) {
-                paragraph = paragraph.trim();
-                if (!paragraph.isEmpty()) {
-                    if (BookCSS.get().isAutoHypens && TxtUtils.isNotEmpty(AppSP.get().hypenLang)) {
-                        paragraph = HypenUtils.applyHypnes(paragraph);
-                    }
-                    writer.println("<p>" + paragraph + "</p>");
-                }
-            }
-            
-            writer.println("</section>");
-        }
-        
-        writer.println("</FictionBook>");
-        writer.close();
-        return file.getPath();
+        return extract(inputPath, outputDir);
     }
 
     public static String extract(String inputPath, String outputDir) throws IOException {
@@ -87,114 +54,143 @@ public class TxtExtract {
 
         boolean isJSON = inputPath.endsWith(".json");
 
-        String encoding = "UTF-8";
+        // 检测编码（只检测一次）
+        Charset charset = StandardCharsets.UTF_8;
         if (AppState.get().isCharacterEncoding) {
-            encoding = AppState.get().characterEncoding;
+            charset = Charset.forName(AppState.get().characterEncoding);
         } else {
-            encoding = ExtUtils.determineTxtEncoding(new FileInputStream(inputPath));
+            FileInputStream fis = new FileInputStream(inputPath);
+            String encoding = ExtUtils.determineTxtEncoding(fis);
+            fis.close();
+            if (!TextUtils.isEmpty(encoding)) {
+                charset = Charset.forName(encoding);
+            }
         }
 
-        BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(inputPath), encoding));
-        PrintWriter writer = new PrintWriter(cacheFile);
-        String line;
+        // 使用大缓冲区
+        BufferedReader input = new BufferedReader(
+            new InputStreamReader(new FileInputStream(inputPath), charset), 256 * 1024);
+        
+        BufferedWriter writer = new BufferedWriter(
+            new OutputStreamWriter(new FileOutputStream(cacheFile), StandardCharsets.UTF_8), 256 * 1024);
 
-        writer.println("<!DOCTYPE html>");
-        writer.println("<html>");
-        if (AppState.get().isPreText) {
-            writer.println(
-                    "<head><style>@page{margin:0px 0.5em} pre{margin:0px;white-space:pre !important;} {body:margin:0px}</style></head>");
-        } else {
-            writer.println("<head><style>p,p+p{margin:0}</style></head>");
-        }
-        writer.println("<body>");
-
-        if (AppState.get().isPreText) {
-            writer.println("<pre>");
-        }
-
-        if (AppState.get().isLineBreaksText) {
-            writer.println("<p>");
-        }
-
-        if (BookCSS.get().isAutoHypens) {
-            HypenUtils.applyLanguage(AppSP.get().hypenLang);
-        }
-
-        List<SimpleMeta> replacements = AppData.get()
-                                               .getAllTextReplaces();
-
-        while ((line = input.readLine()) != null) {
-            String outLn = null;
-
+        try {
+            // 写入 HTML 头部（一次性写入）
+            StringBuilder header = new StringBuilder(512);
+            header.append("<!DOCTYPE html>\n<html>\n");
             if (AppState.get().isPreText) {
-
-                outLn = retab(line, 8);
-                outLn = TextUtils.htmlEncode(outLn);
-
-                if (TxtUtils.isLineStartEndUpperCase(outLn)) {
-                    outLn = "<b>" + outLn + "</b>";
-                }
-
+                header.append("<head><style>@page{margin:0px 0.5em} pre{margin:0px;white-space:pre !important;} {body:margin:0px}</style></head>\n");
             } else {
+                header.append("<head><style>p,p+p{margin:0}</style></head>\n");
+            }
+            header.append("<body>\n");
+            if (AppState.get().isPreText) {
+                header.append("<pre>\n");
+            }
+            if (AppState.get().isLineBreaksText) {
+                header.append("<p>\n");
+            }
+            writer.write(header.toString());
 
-                if (AppState.get().isLineBreaksText) {
-                    if (line.trim()
-                            .length() == 0) {
-                        outLn = "<br/>";
-                    } else {
-                        outLn = format(line, replacements);
-                    }
+            if (BookCSS.get().isAutoHypens) {
+                HypenUtils.applyLanguage(AppSP.get().hypenLang);
+            }
 
-                } else {
-                    if (line.trim()
-                            .length() == 0) {
-                        outLn = "<p>&nbsp;</p>";
-                    } else if (TxtUtils.isLineStartEndUpperCase(line)) {
-                        outLn = "<b>" + format(line, replacements) + "</b>";
-                    } else if (line.contains("Title:")) {
-                        outLn = "<b>" + format(line, replacements) + "</b>";
-                    } else {
-                        outLn = "<p>" + format(line, replacements) + "</p>";
+            List<SimpleMeta> replacements = AppData.get().getAllTextReplaces();
+
+            // 批量处理：每 1000 行批量写入一次
+            StringBuilder batch = new StringBuilder(64 * 1024);
+            int batchSize = 0;
+            final int MAX_BATCH = 1000;
+            
+            String line;
+            while ((line = input.readLine()) != null) {
+                String outLn = processLine(line, replacements, isJSON);
+                
+                if (outLn != null) {
+                    batch.append(outLn).append('\n');
+                    batchSize++;
+                    
+                    if (batchSize >= MAX_BATCH) {
+                        writer.write(batch.toString());
+                        batch.setLength(0);
+                        batchSize = 0;
                     }
                 }
-
             }
-            if (isJSON && outLn != null) {
-                outLn = outLn.replace(",", ",<br/>");
+            
+            // 写入剩余内容
+            if (batchSize > 0) {
+                writer.write(batch.toString());
             }
 
-            if (outLn != null) {
-                outLn = Fb2Extractor.accurateLine(outLn);
-                // LOG.d("LINE", outLn);
-
-                writer.println(outLn);
+            // 写入尾部（一次性写入）
+            StringBuilder footer = new StringBuilder(64);
+            if (AppState.get().isLineBreaksText) {
+                footer.append("</p>\n");
             }
+            if (AppState.get().isPreText) {
+                footer.append("</pre>\n");
+            }
+            footer.append("</body></html>\n");
+            writer.write(footer.toString());
+            
+        } finally {
+            input.close();
+            writer.close();
         }
-        if (AppState.get().isLineBreaksText) {
-            writer.println("</p>");
-        }
-
-        if (AppState.get().isPreText) {
-            writer.println("</pre>");
-        }
-        writer.println("</body></html>");
-
-        input.close();
-        writer.close();
 
         return cacheFile.getPath();
+    }
+    
+    private static String processLine(String line, List<SimpleMeta> replacements, boolean isJSON) {
+        String outLn = null;
+
+        if (AppState.get().isPreText) {
+            outLn = retab(line, 8);
+            outLn = TextUtils.htmlEncode(outLn);
+            if (TxtUtils.isLineStartEndUpperCase(outLn)) {
+                outLn = "<b>" + outLn + "</b>";
+            }
+        } else {
+            if (AppState.get().isLineBreaksText) {
+                if (line.trim().length() == 0) {
+                    outLn = "<br/>";
+                } else {
+                    outLn = format(line, replacements);
+                }
+            } else {
+                if (line.trim().length() == 0) {
+                    outLn = "<p>&nbsp;</p>";
+                } else if (TxtUtils.isLineStartEndUpperCase(line)) {
+                    outLn = "<b>" + format(line, replacements) + "</b>";
+                } else if (line.contains("Title:")) {
+                    outLn = "<b>" + format(line, replacements) + "</b>";
+                } else {
+                    outLn = "<p>" + format(line, replacements) + "</p>";
+                }
+            }
+        }
+        
+        if (isJSON && outLn != null) {
+            outLn = outLn.replace(",", ",<br/>");
+        }
+
+        if (outLn != null) {
+            outLn = Fb2Extractor.accurateLine(outLn);
+        }
+        
+        return outLn;
     }
 
     public static String retab(final String text, final int tabstop) {
         final char[] input = text.toCharArray();
-        final StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder(input.length + 8);
 
         int linepos = 0;
         for (int i = 0; i < input.length; i++) {
-            // treat the character
             final char ch = input[i];
             if (ch == '\t') {
-                // expand the tab
                 do {
                     sb.append(' ');
                     linepos++;
@@ -203,31 +199,27 @@ public class TxtExtract {
                 sb.append(ch);
                 linepos++;
             }
-
-            // end of line. Reset the lineposition to zero.
-            // if (ch == '\n' || ch == '\r' || (ch | 1) == '\u2029' || ch ==
-            // '\u0085')
-            // linepos = 0;
-
         }
 
         return sb.toString();
     }
 
     public static String format(String line, List<SimpleMeta> replacements) {
-        try {
-            line = line.replace("\n", "");
-            line = line.replace("\r", "");
-            line = TextUtils.htmlEncode(line);
-            if (BookCSS.get().isAutoHypens && TxtUtils.isNotEmpty(AppSP.get().hypenLang)) {
-                line = HypenUtils.applyHypnes(line, replacements);
-            }
-            line = line.trim();
-
-        } catch (Exception e) {
-            LOG.e(e);
+        line = line.replace("\n", "").replace("\r", "");
+        line = TextUtils.htmlEncode(line);
+        if (BookCSS.get().isAutoHypens && TxtUtils.isNotEmpty(AppSP.get().hypenLang)) {
+            line = HypenUtils.applyHypnes(line, replacements);
         }
+        line = line.trim();
+        if (replacements != null && AppState.get().isEnableTextReplacement) {
+            for (SimpleMeta simpleMeta : replacements) {
+                if (simpleMeta != null && TxtUtils.isNotEmpty(simpleMeta.name)) {
+                    line = line.replace(simpleMeta.name, simpleMeta.path);
+                }
+            }
+        }
+        line = line.replace("*", "");
+        line = foramtUB(line);
         return line;
     }
-
 }

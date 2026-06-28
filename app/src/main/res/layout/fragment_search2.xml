@@ -28,6 +28,20 @@
             android:layout_height="@dimen/wh_button"
             android:src="@drawable/glyphicons_600_menu" />
 
+        <ImageView
+            android:visibility="visible"
+            android:contentDescription="WLAN传书"
+            android:id="@+id/wifiTransferButton"
+            android:padding="4dip"
+            android:background="@drawable/bg_search_edit"
+            android:adjustViewBounds="true"
+            android:cropToPadding="true"
+            android:layout_marginLeft="2dip"
+            android:layout_marginRight="0dip"
+            android:layout_width="@dimen/wh_button"
+            android:layout_height="@dimen/wh_button"
+            android:src="@drawable/glyphicons_wifi" />
+
 
         <RelativeLayout
             android:layout_marginLeft="2dip"

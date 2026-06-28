@@ -120,7 +120,7 @@ public class SearchFragment2 extends UIFragment<FileMeta> {
     AuthorsAdapter2 authorsAdapter;
     TextView countBooks, sortBy, layoutErrorOnRestart;
     Handler handler;
-    ImageView sortOrder, myAutoCompleteImage, cleanFilter, menu2;
+    ImageView sortOrder, myAutoCompleteImage, cleanFilter, menu2, wifiTransferButton;
     View onRefresh, secondTopPanel, layoutError;
     AutoCompleteTextView searchEditText;
     int countTitles = 0;
@@ -370,6 +370,7 @@ public class SearchFragment2 extends UIFragment<FileMeta> {
         sortBy = (TextView) view.findViewById(R.id.sortBy);
         sortOrder = (ImageView) view.findViewById(R.id.sortOrder);
         menu2 = (ImageView) view.findViewById(R.id.menu2);
+        wifiTransferButton = (ImageView) view.findViewById(R.id.wifiTransferButton);
         myAutoCompleteImage = (ImageView) view.findViewById(R.id.myAutoCompleteImage);
         searchEditText = (AutoCompleteTextView) view.findViewById(R.id.filterLine);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
@@ -577,6 +578,13 @@ public class SearchFragment2 extends UIFragment<FileMeta> {
                         .findViewById(R.id.imageMenu1)
                         .performClick();
                 }
+            }
+        });
+
+        wifiTransferButton.setOnClickListener(new OnClickListener() {
+            @Override public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), com.foobnix.wifitransfer.WifiTransferActivity.class);
+                startActivity(intent);
             }
         });
 
