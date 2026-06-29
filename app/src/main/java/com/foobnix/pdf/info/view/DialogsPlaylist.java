@@ -377,7 +377,7 @@ public class DialogsPlaylist {
 
         playListNameEdit.setVisibility(View.GONE);
         playlistRecycleView.setVisibility(View.VISIBLE);
-        playListParent.setVisibility(View.VISIBLE);
+        // playListParent.setVisibility(View.VISIBLE); // Hide playlist name area
 
         Runnable updateVisible = new Runnable() {
             @Override public void run() {

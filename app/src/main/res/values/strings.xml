@@ -624,6 +624,9 @@
    <string name="close_menu">Close menu</string>
    <string name="go_to_page">Go to page</string>
    <string name="update_library">Update library</string>
+   <string name="sort_by">Sort by</string>
+   <string name="view">View</string>
+   <string name="wifi_transfer">WLAN Transfer</string>
    <string name="ascending">Ascending</string>
    <string name="descending">Descending</string>
    <string name="remove">Remove</string>
@@ -640,6 +643,7 @@
    <string name="drag_element">Drag element</string>
    <string name="cd_application_menu">Application menu</string>
    <string name="cd_view_menu">View menu</string>
+   <string name="cd_more_options">More options</string>
    <string name="cd_download_more_fonts">Download more fonts</string>
    <string name="restore_search_query_when_the_application_starts">Restore search query at startup</string>
    <string name="lock_books_by_default">Lock books by default</string>

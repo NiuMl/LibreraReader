@@ -624,6 +624,9 @@
    <string name="close_menu">关闭菜单</string>
    <string name="go_to_page">转到页面</string>
    <string name="update_library">更新书库</string>
+   <string name="sort_by">排序</string>
+   <string name="view">视图</string>
+   <string name="wifi_transfer">WLAN传书</string>
    <string name="ascending">升序</string>
    <string name="descending">降序</string>
    <string name="remove">移除</string>

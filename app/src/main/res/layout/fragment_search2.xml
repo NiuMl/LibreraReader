@@ -28,20 +28,6 @@
             android:layout_height="@dimen/wh_button"
             android:src="@drawable/glyphicons_600_menu" />
 
-        <ImageView
-            android:visibility="visible"
-            android:contentDescription="WLAN传书"
-            android:id="@+id/wifiTransferButton"
-            android:padding="4dip"
-            android:background="@drawable/bg_search_edit"
-            android:adjustViewBounds="true"
-            android:cropToPadding="true"
-            android:layout_marginLeft="2dip"
-            android:layout_marginRight="0dip"
-            android:layout_width="@dimen/wh_button"
-            android:layout_height="@dimen/wh_button"
-            android:src="@drawable/glyphicons_wifi" />
-
 
         <RelativeLayout
             android:layout_marginLeft="2dip"
@@ -114,70 +100,19 @@
                 android:src="@drawable/glyphicons_599_menu_close" />
         </RelativeLayout>
 
-        <LinearLayout
-            android:id="@+id/secondTopPanel"
-            android:layout_width="wrap_content"
+        <ImageView
+            android:visibility="visible"
+            android:contentDescription="@string/cd_more_options"
+            android:id="@+id/moreOptionsButton"
+            android:padding="4dip"
+            android:background="@drawable/bg_search_edit"
+            android:adjustViewBounds="true"
+            android:cropToPadding="true"
+            android:layout_marginLeft="2dip"
+            android:layout_width="@dimen/wh_button"
             android:layout_height="@dimen/wh_button"
-            android:background="@drawable/bg_search_second"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:src="@drawable/glyphicons_498_more_vertical" />
 
-            <TextView
-                android:contentDescription="@string/cd_sort_results"
-                android:id="@+id/sortBy"
-                android:layout_width="@dimen/sort_by_size"
-                android:layout_height="@dimen/wh_button"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true"
-                android:ellipsize="end"
-                android:gravity="center_vertical"
-                android:paddingLeft="8dip"
-                android:singleLine="true"
-                android:text="@string/by_path"
-                android:textColor="@color/black"
-                android:textStyle="normal" />
-
-            <ImageView
-                android:visibility="visible"
-                android:contentDescription="@string/cd_sort_order"
-                android:id="@+id/sortOrder"
-                android:layout_width="@dimen/wh_button_small"
-                android:layout_height="@dimen/wh_button_small"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true"
-                android:padding="4dip"
-                android:src="@drawable/glyphicons_221_chevron_down"
-                android:tint="@color/black" />
-
-            <View
-                android:layout_width="1dip"
-                android:layout_height="match_parent"
-                android:background="@color/tint_divider" />
-
-            <ImageView
-                android:contentDescription="@string/update_library"
-                android:id="@+id/onRefresh"
-                style="@style/buttonWhite"
-                android:layout_width="@dimen/wh_button"
-                android:layout_height="@dimen/wh_button"
-                android:background="?android:attr/selectableItemBackground"
-                android:src="@drawable/glyphicons_82_refresh"
-                android:tint="@color/black" />
-
-            <View
-                android:layout_width="1dip"
-                android:layout_height="match_parent"
-                android:background="@color/tint_divider" />
-
-            <ImageView
-                android:contentDescription="@string/cd_view_menu"
-                android:id="@+id/onGridList"
-                style="@style/buttonWhite"
-                android:layout_width="@dimen/wh_button"
-                android:layout_height="@dimen/wh_button"
-                android:src="@drawable/my_glyphicons_114_paragraph_justify"
-                android:tint="@color/black" />
-        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout

@@ -30,9 +30,17 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListPopupWindow;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.CheckBox;
+import android.widget.PopupWindow;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.view.Gravity;
+import android.util.TypedValue;
 
 import androidx.core.graphics.ColorUtils;
 import androidx.core.util.Pair;
@@ -71,6 +79,7 @@ import com.foobnix.pdf.info.view.KeyCodeDialog;
 import com.foobnix.pdf.info.view.MyPopupMenu;
 import com.foobnix.pdf.info.widget.DialogTranslateFromTo;
 import com.foobnix.pdf.info.widget.PrefDialogs;
+import com.foobnix.pdf.info.wrapper.MagicHelper;
 import com.foobnix.pdf.info.wrapper.PopupHelper;
 import com.foobnix.pdf.search.activity.msg.MessageSyncFinish;
 import com.foobnix.pdf.search.activity.msg.NotifyAllFragments;
@@ -118,10 +127,10 @@ public class SearchFragment2 extends UIFragment<FileMeta> {
     public int rememberPos = 0;
     FileMetaAdapter searchAdapter;
     AuthorsAdapter2 authorsAdapter;
-    TextView countBooks, sortBy, layoutErrorOnRestart;
+    TextView countBooks, layoutErrorOnRestart;
     Handler handler;
-    ImageView sortOrder, myAutoCompleteImage, cleanFilter, menu2, wifiTransferButton;
-    View onRefresh, secondTopPanel, layoutError;
+    ImageView myAutoCompleteImage, cleanFilter, menu2, moreOptionsButton;
+    View layoutError;
     AutoCompleteTextView searchEditText;
     int countTitles = 0;
     Runnable hideKeyboard = new Runnable() {
@@ -158,7 +167,6 @@ public class SearchFragment2 extends UIFragment<FileMeta> {
             if (BooksService.RESULT_SEARCH_FINISH.equals(intent.getStringExtra(Intent.EXTRA_TEXT))) {
                 searchAndOrderAsync();
                 searchEditText.setHint(R.string.search);
-                onRefresh.setActivated(true);
 
                 if (AppsConfig.IS_LOG) {
                     searchEditText.setHint(Apps.getApplicationName(getContext()));
@@ -170,9 +178,7 @@ public class SearchFragment2 extends UIFragment<FileMeta> {
                     countBooks.setText("" + count);
                 }
                 searchEditText.setHint(R.string.searching_please_wait_);
-                onRefresh.setActivated(false);
             } else if (BooksService.RESULT_BUILD_LIBRARY.equals(intent.getStringExtra(Intent.EXTRA_TEXT))) {
-                onRefresh.setActivated(false);
                 searchEditText.setHint(R.string.extracting_information_from_books);
             } else if (BooksService.RESULT_SEARCH_MESSAGE_TXT.equals(intent.getStringExtra(Intent.EXTRA_TEXT))) {
                 searchEditText.setHint(intent.getStringExtra("TEXT"));
@@ -269,12 +275,12 @@ public class SearchFragment2 extends UIFragment<FileMeta> {
     }
 
     @Override public void onTintChanged() {
-        TintUtil.setBackgroundFillColor(secondTopPanel, TintUtil.color);
 
         int color =
                 (AppState.get().appTheme == AppState.THEME_DARK_OLED || AppState.get().appTheme == AppState.THEME_DARK) ?
                         Color.WHITE : TintUtil.color;
         TintUtil.setTintImageNoAlpha(menu2, color);
+        TintUtil.setTintImageNoAlpha(moreOptionsButton, color);
 
         int colorTheme = TintUtil.getColorInDayNighth();
         colorTheme = ColorUtils.setAlphaComponent(colorTheme, 230);
@@ -287,13 +293,16 @@ public class SearchFragment2 extends UIFragment<FileMeta> {
         if (AppState.get().appTheme == AppState.THEME_DARK_OLED || (AppState.get().appTheme == AppState.THEME_DARK && TintUtil.color == Color.BLACK)) {
             searchEditText.setBackgroundResource(R.drawable.bg_search_edit_night);
             menu2.setBackgroundResource(R.drawable.bg_search_edit_night);
+            moreOptionsButton.setBackgroundResource(R.drawable.bg_search_edit_night);
 
         } else {
             searchEditText.setBackgroundResource(R.drawable.bg_search_edit);
             menu2.setBackgroundResource(R.drawable.bg_search_edit);
+            moreOptionsButton.setBackgroundResource(R.drawable.bg_search_edit);
         }
         TintUtil.setStrokeColor(searchEditText, TintUtil.color);
         TintUtil.setStrokeColor(menu2, TintUtil.color);
+        TintUtil.setStrokeColor(moreOptionsButton, TintUtil.color);
 
         TintUtil.setUITextColor(searchEditText, colorTheme);
 
@@ -301,6 +310,7 @@ public class SearchFragment2 extends UIFragment<FileMeta> {
             searchEditText.setBackgroundResource(R.drawable.bg_search_edit);
             TintUtil.setStrokeColor(searchEditText, Color.BLACK);
             TintUtil.setStrokeColor(menu2, Color.BLACK);
+            TintUtil.setStrokeColor(moreOptionsButton, Color.BLACK);
             TintUtil.setUITextColor(searchEditText, Color.BLACK);
             countBooks.setTextColor(Color.BLACK);
 
@@ -309,7 +319,7 @@ public class SearchFragment2 extends UIFragment<FileMeta> {
     }
 
     public void onGridList() {
-        onGridList(AppState.get().libraryMode, onGridlList, searchAdapter, authorsAdapter);
+        onGridList(AppState.get().libraryMode, null, searchAdapter, authorsAdapter);
     }
 
     public void initAutocomplition() {
@@ -362,15 +372,10 @@ public class SearchFragment2 extends UIFragment<FileMeta> {
 
         handler = new Handler(Looper.getMainLooper());
 
-        secondTopPanel = view.findViewById(R.id.secondTopPanel);
         countBooks = (TextView) view.findViewById(R.id.countBooks);
-        onRefresh = view.findViewById(R.id.onRefresh);
-        onRefresh.setActivated(true);
         cleanFilter = (ImageView) view.findViewById(R.id.cleanFilter);
-        sortBy = (TextView) view.findViewById(R.id.sortBy);
-        sortOrder = (ImageView) view.findViewById(R.id.sortOrder);
         menu2 = (ImageView) view.findViewById(R.id.menu2);
-        wifiTransferButton = (ImageView) view.findViewById(R.id.wifiTransferButton);
+        moreOptionsButton = (ImageView) view.findViewById(R.id.moreOptionsButton);
         myAutoCompleteImage = (ImageView) view.findViewById(R.id.myAutoCompleteImage);
         searchEditText = (AutoCompleteTextView) view.findViewById(R.id.filterLine);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
@@ -386,39 +391,7 @@ public class SearchFragment2 extends UIFragment<FileMeta> {
 
         layoutError.setOnClickListener(new OnClickListener() {
             @Override public void onClick(View v) {
-                onRefresh.performClick();
-            }
-        });
-
-        onRefresh.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override public boolean onLongClick(View v) {
-                if (BooksService.isRunning) {
-                    Toast.makeText(getActivity(), R.string.please_wait_books_are_being_processed_, Toast.LENGTH_SHORT)
-                         .show();
-                    return true;
-                }
-                if (AppState.get().isShowTestBooks) {
-                    AlertDialogs.showDialog(getActivity(), "Run the self-test? " + AppData.getTestFileName()
-                                                                                          .getName(),
-                            getString(R.string.ok), new Runnable() {
-
-                                @Override public void run() {
-                                    // BooksService.startForeground(getActivity(), BooksService.ACTION_RUN_SELF_TEST);
-                                    getActivity().getWindow()
-                                                 .addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                                    OneTimeWorkRequest workRequest =
-                                            new OneTimeWorkRequest.Builder(SelfTestWorker.class).build();
-
-                                    //WorkManager.getInstance(getContext()).enqueue(workRequest);
-                                    WorkManager.getInstance(getContext())
-
-                                               .enqueueUniqueWork(SEARCH_FRAGMENT_WORKER_NAME, WORKER_POLICY,
-                                                       workRequest);
-
-                                }
-                            }, null);
-                }
-                return true;
+                triggerSearch();
             }
         });
 
@@ -442,42 +415,6 @@ public class SearchFragment2 extends UIFragment<FileMeta> {
 
         authorsAdapter = new AuthorsAdapter2();
 
-        onGridlList = (ImageView) view.findViewById(R.id.onGridList);
-        onGridlList.setOnClickListener(new OnClickListener() {
-
-            @Override public void onClick(View v) {
-                popupMenu(onGridlList);
-            }
-        });
-
-        onRefresh.setOnClickListener(new OnClickListener() {
-
-            @Override public void onClick(View v) {
-
-                if (!onRefresh.isActivated()) {
-                    Toast.makeText(getActivity(), R.string.extracting_information_from_books, Toast.LENGTH_LONG)
-                         .show();
-                    return;
-                }
-                PrefDialogs.chooseFolderDialog(getActivity(), new Runnable() {
-
-                    @Override public void run() {
-                        //BookCSS.get().searchPaths = BookCSS.get().searchPaths.replace("//", "/");
-                    }
-                }, new Runnable() {
-
-                    @Override public void run() {
-                        Prefs.get()
-                             .remove(AppProfile.getCurrent(), 0);
-                        layoutError.setVisibility(View.GONE);
-                        recyclerView.scrollToPosition(0);
-                        seachAll();
-                        ((AdsFragmentActivity) SearchFragment2.this.getActivity()).showInterstitialNoFinish();
-                    }
-                });
-            }
-        });
-
         cleanFilter.setOnClickListener(new OnClickListener() {
 
             @Override public void onClick(View v) {
@@ -486,39 +423,6 @@ public class SearchFragment2 extends UIFragment<FileMeta> {
                 searchAndOrderAsync();
             }
         });
-
-        sortBy.setOnClickListener(new OnClickListener() {
-
-            @Override public void onClick(View v) {
-                sortByPopup(v);
-            }
-        });
-
-        sortOrder.setOnClickListener(new OnClickListener() {
-
-            @Override public void onClick(View v) {
-                AppState.get().isSortAsc = !AppState.get().isSortAsc;
-                searchAndOrderAsync();
-            }
-        });
-        sortOrder.setOnLongClickListener(new OnLongClickListener() {
-
-            @Override public boolean onLongClick(View v) {
-                AppState.get().isVisibleSorting = !AppState.get().isVisibleSorting;
-                sortOrder.setVisibility(TxtUtils.visibleIf(AppState.get().isVisibleSorting));
-                return true;
-            }
-        });
-
-        sortBy.setOnLongClickListener(new OnLongClickListener() {
-
-            @Override public boolean onLongClick(View v) {
-                AppState.get().isVisibleSorting = !AppState.get().isVisibleSorting;
-                sortOrder.setVisibility(TxtUtils.visibleIf(AppState.get().isVisibleSorting));
-                return true;
-            }
-        });
-        sortOrder.setVisibility(TxtUtils.visibleIf(AppState.get().isVisibleSorting));
 
         bindAdapter(searchAdapter);
 
@@ -581,10 +485,9 @@ public class SearchFragment2 extends UIFragment<FileMeta> {
             }
         });
 
-        wifiTransferButton.setOnClickListener(new OnClickListener() {
+        moreOptionsButton.setOnClickListener(new OnClickListener() {
             @Override public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), com.foobnix.wifitransfer.WifiTransferActivity.class);
-                startActivity(intent);
+                showMoreOptionsMenu(view);
             }
         });
 
@@ -699,6 +602,30 @@ public class SearchFragment2 extends UIFragment<FileMeta> {
         }
     }
 
+    private void triggerSearch() {
+        if (BooksService.isRunning) {
+            Toast.makeText(getActivity(), R.string.please_wait_books_are_being_processed_, Toast.LENGTH_SHORT)
+                 .show();
+            return;
+        }
+        PrefDialogs.chooseFolderDialog(getActivity(), new Runnable() {
+
+            @Override public void run() {
+                //BookCSS.get().searchPaths = BookCSS.get().searchPaths.replace("//", "/");
+            }
+        }, new Runnable() {
+
+            @Override public void run() {
+                Prefs.get()
+                     .remove(AppProfile.getCurrent(), 0);
+                layoutError.setVisibility(View.GONE);
+                recyclerView.scrollToPosition(0);
+                seachAll();
+                ((AdsFragmentActivity) SearchFragment2.this.getActivity()).showInterstitialNoFinish();
+            }
+        });
+    }
+
     public void checkForDeleteBooks() {
         try {
             if (!AppState.get().isScanOnLaunch) {
@@ -735,15 +662,6 @@ public class SearchFragment2 extends UIFragment<FileMeta> {
             return;
         }
         searchEditText.setHint(R.string.msg_loading);
-        sortBy.setText(AppDB.SORT_BY.getByID(AppState.get().sortBy)
-                                    .getResName());
-
-        sortOrder.setImageResource(AppState.get().isSortAsc ? R.drawable.glyphicons_221_chevron_down :
-                R.drawable.glyphicons_222_chevron_up);
-
-        String order = getString(AppState.get().isSortAsc ? R.string.ascending : R.string.descending);
-        sortBy.setContentDescription(getString(R.string.cd_sort_results) + " " + sortBy.getText());
-        sortOrder.setContentDescription(order);
 
         populate();
 
@@ -940,11 +858,6 @@ public class SearchFragment2 extends UIFragment<FileMeta> {
                   .contains(AppState.get().libraryMode)) {
             AppState.get().previousLibraryMode = AppState.get().libraryMode;
             searchEditText.setEnabled(true);
-            sortBy.setEnabled(true);
-            sortOrder.setEnabled(true);
-            if (AppState.get().isVisibleSorting) {
-                sortOrder.setVisibility(View.VISIBLE);
-            }
 
             searchAdapter.clearItems();
             searchAdapter.getItemsList()
@@ -963,10 +876,6 @@ public class SearchFragment2 extends UIFragment<FileMeta> {
         } else {
             prevLibModeAuthors = AppState.get().libraryMode;
             searchEditText.setEnabled(false);
-            sortBy.setEnabled(false);
-            sortBy.setText("");
-            sortOrder.setEnabled(false);
-            sortOrder.setVisibility(View.INVISIBLE);
 
             String empty = "";
             if (AppState.get().libraryMode == AppState.MODE_AUTHORS) {
@@ -1037,29 +946,114 @@ public class SearchFragment2 extends UIFragment<FileMeta> {
     }
 
     private void sortByPopup(final View view) {
+        final ListPopupWindow p1 = new ListPopupWindow(getActivity());
 
-        MyPopupMenu popup = new MyPopupMenu(getActivity(), view);
-        for (final SORT_BY sortBy : SORT_BY.values()) {
-            popup.getMenu()
-                 .add(sortBy.getResName())
-                 .setOnMenuItemClickListener(new OnMenuItemClickListener() {
+        List<SORT_BY> sortList = new ArrayList<>(Arrays.asList(SORT_BY.values()));
 
-                     @Override public boolean onMenuItemClick(MenuItem item) {
-                         AppState.get().sortBy = sortBy.getIndex();
-                         searchAndOrderAsync();
-                         return false;
-                     }
-                 });
+        BaseItemLayoutAdapter<SORT_BY> adapter = new BaseItemLayoutAdapter<SORT_BY>(getActivity(), R.layout.item_dict_line, sortList) {
+            @Override
+            public void populateView(View layout, int position, final SORT_BY sortBy) {
+                TextView textView = (TextView) layout.findViewById(R.id.text1);
+                TextView profileLetter = (TextView) layout.findViewById(R.id.profileLetter);
+                profileLetter.setVisibility(View.GONE);
+
+                textView.setVisibility(View.VISIBLE);
+                textView.setText(sortBy.getResName());
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+                textView.setTextColor(Color.WHITE);
+
+                ImageView imageView = (ImageView) layout.findViewById(R.id.image1);
+                imageView.setVisibility(View.GONE);
+
+                CheckBox checkbox1 = (CheckBox) layout.findViewById(R.id.checkbox1);
+                checkbox1.setVisibility(View.GONE);
+
+                layout.setOnClickListener(new OnClickListener() {
+                    @Override public void onClick(View v) {
+                        AppState.get().sortBy = sortBy.getIndex();
+                        searchAndOrderAsync();
+                        p1.dismiss();
+                    }
+                });
+            }
+        };
+
+        p1.setAdapter(adapter);
+        p1.setAnchorView(view);
+        p1.setModal(true);
+        p1.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+
+        int popupWidth = Dips.dpToPx(140);
+        p1.setWidth(popupWidth);
+        p1.setHeight(Dips.screenHeight() / 2);
+
+        int anchorLocation[] = new int[2];
+        view.getLocationOnScreen(anchorLocation);
+        int xOffset = anchorLocation[0] - popupWidth;
+        p1.setHorizontalOffset(xOffset);
+        p1.setVerticalOffset(-Dips.dpToPx(40));
+
+        try {
+            p1.show();
+        } catch (Exception e) {
+            LOG.e(e);
         }
-        popup.show();
+    }
+
+    private void showMoreOptionsMenu(View view) {
+        MyPopupMenu p = new MyPopupMenu(getActivity(), view);
+
+        p.getMenu()
+         .add(R.string.sort_by)
+         .setIcon(R.drawable.glyphicons_221_chevron_down)
+         .setOnMenuItemClickListener(new OnMenuItemClickListener() {
+             @Override public boolean onMenuItemClick(MenuItem item) {
+                 sortByPopup(moreOptionsButton);
+                 return false;
+             }
+         })
+         .setDismissOnClick(false);
+
+        p.getMenu()
+         .add(R.string.update_library)
+         .setIcon(R.drawable.glyphicons_82_refresh)
+         .setOnMenuItemClickListener(new OnMenuItemClickListener() {
+             @Override public boolean onMenuItemClick(MenuItem item) {
+                 triggerSearch();
+                 return false;
+             }
+         });
+
+        p.getMenu()
+         .add(R.string.view)
+         .setIcon(R.drawable.my_glyphicons_114_paragraph_justify)
+         .setOnMenuItemClickListener(new OnMenuItemClickListener() {
+             @Override public boolean onMenuItemClick(MenuItem item) {
+                 popupMenu();
+                 return false;
+             }
+         });
+
+        p.getMenu()
+         .add(R.string.wifi_transfer)
+         .setIcon(R.drawable.glyphicons_301_square_upload)
+         .setOnMenuItemClickListener(new OnMenuItemClickListener() {
+             @Override public boolean onMenuItemClick(MenuItem item) {
+                 Intent intent = new Intent(getActivity(), com.foobnix.wifitransfer.WifiTransferActivity.class);
+                 startActivity(intent);
+                 return false;
+             }
+         });
+
+        p.show();
     }
 
     public void popupMenuTest() {
-        popupMenu(onGridlList);
+        popupMenu();
     }
 
-    private void popupMenu(final ImageView onGridList) {
-        MyPopupMenu p = new MyPopupMenu(getActivity(), onGridList);
+    private void popupMenu() {
+        MyPopupMenu p = new MyPopupMenu(getActivity(), moreOptionsButton);
         PopupHelper.addPROIcon(p, getActivity());
         List<Integer> names = Arrays.asList(R.string.list, //
                 R.string.compact, //
@@ -1103,9 +1097,6 @@ public class SearchFragment2 extends UIFragment<FileMeta> {
 
                  @Override public boolean onMenuItemClick(MenuItem item) {
                      AppState.get().libraryMode = actions.get(index);
-                     onGridList.setImageResource(icons.get(index));
-                     onGridList.setContentDescription(
-                             getString(R.string.cd_view_menu) + " " + getString(names.get(index)));
 
                      if (Arrays.asList(AppState.MODE_PUBLICATION_DATE, AppState.MODE_PUBLISHER, AppState.MODE_AUTHORS,
                                        AppState.MODE_SERIES, AppState.MODE_GENRE, AppState.MODE_USER_TAGS, AppState.MODE_KEYWORDS,
@@ -1114,7 +1105,6 @@ public class SearchFragment2 extends UIFragment<FileMeta> {
                          searchEditText.setText("");
                      }
 
-                     onGridList();
                      searchAndOrderAsync();
                      return false;
                  }
@@ -1191,10 +1181,8 @@ public class SearchFragment2 extends UIFragment<FileMeta> {
         LOG.d("SeachFragment2", "notifyFragment");
         if (searchAdapter != null) {
             searchAdapter.notifyDataSetChanged();
-            sortOrder.setVisibility(TxtUtils.visibleIf(AppState.get().isVisibleSorting));
         }
         if (!BooksService.isRunning) {
-            onRefresh.setActivated(!BooksService.isRunning);
             searchEditText.setHint(R.string.search);
 
 //            if(AppsConfig.IS_LOG){

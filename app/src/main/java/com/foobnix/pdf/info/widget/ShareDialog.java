@@ -91,7 +91,7 @@ public class ShareDialog {
         final boolean isShowInfo = !ExtUtils.isExteralSD(file.getPath());
 
         items.add(a.getString(R.string.open_with));
-        items.add(a.getString(R.string.send_file));
+        // items.add(a.getString(R.string.send_file)); // Hide send file
 
         if (canDelete) {
             items.add(a.getString(R.string.delete));
@@ -118,8 +118,6 @@ public class ShareDialog {
                        }
                        if (which == i++) {
                            ExtUtils.openWith(a, file);
-                       } else if (which == i++) {
-                           ExtUtils.sendFileTo(a, file);
                        } else if (canDelete && which == i++) {
                            FileInformationDialog.dialogDelete(a, file, onDeleteAction);
                        } else if (isShowInfo && which == i++) {
@@ -276,7 +274,7 @@ public class ShareDialog {
             }
 
             if (dc.isMusicianMode() == false) {
-                items.add("Ⓜ "+AppState.get().nameMusicianMode);
+                // items.add("Ⓜ "+AppState.get().nameMusicianMode); // Hide musician mode
             }
         }
 
@@ -287,14 +285,14 @@ public class ShareDialog {
 
         if (dc != null) {
             //items.add(a.getString(R.string.fast_reading));
-            items.add(iconText(a, "▶▶", R.string.fast_reading));
+            // items.add(iconText(a, "▶▶", R.string.fast_reading)); // Hide fast reading (RSVP)
         }
 
         //items.add(a.getString(R.string.open_with));
         //items.add(a.getString(R.string.send_file));
 
         items.add(iconText(a, "⎘", R.string.open_with));
-        items.add(iconText(a, "➥", R.string.send_file));
+        // items.add(iconText(a, "➥", R.string.send_file)); // Hide send file
 
         final boolean isExternalOrCloud = ExtUtils.isExteralSD(file.getPath()) || Clouds.isCloud(file.getPath());
         boolean canDelete1 =
@@ -419,30 +417,31 @@ public class ShareDialog {
                         });
                     }
                 }
-                if (dc != null && dc.isMusicianMode() == false && which == i++) {
-                    dc.onCloseActivityFinal(new Runnable() {
-
-                        @Override public void run() {
-                            AppSP.get().readingMode = AppState.READING_MODE_MUSICIAN;
-                            ExtUtils.showDocumentWithoutDialog(a, file, a.getIntent()
-                                                                         .getStringExtra(
-                                                                                 DocumentController.EXTRA_PLAYLIST));
-                        }
-                    });
-                }
+                // if (dc != null && dc.isMusicianMode() == false && which == i++) {
+                //     dc.onCloseActivityFinal(new Runnable() {
+                //
+                //         @Override public void run() {
+                //             AppSP.get().readingMode = AppState.READING_MODE_MUSICIAN;
+                //             ExtUtils.showDocumentWithoutDialog(a, file, a.getIntent()
+                //                                                  .getStringExtra(
+                //                                                          DocumentController.EXTRA_PLAYLIST));
+                //         }
+                //     });
+                // }
                 if (isPDF && which == i++) {
                     ExtUtils.openPDFInTextReflow(a, file, page + 1, dc);
                 }
-                if (dc != null && which == i++) {
-                    if (hideShow != null) {
-                        AppState.get().isEditMode = false;
-                        hideShow.run();
-                    }
-                    DialogSpeedRead.show(a, dc);
-                } else if (which == i++) {
+                // if (dc != null && which == i++) { // Hide fast reading (RSVP)
+                //     if (hideShow != null) {
+                //         AppState.get().isEditMode = false;
+                //         hideShow.run();
+                //     }
+                //     DialogSpeedRead.show(a, dc);
+                // } else if (which == i++) {
+                //     ExtUtils.openWith(a, file);
+                // }
+                if (which == i++) {
                     ExtUtils.openWith(a, file);
-                } else if (which == i++) {
-                    ExtUtils.sendFileTo(a, file);
                 } else if (isMainTabs && canDelete && which == i++) {
                     FileInformationDialog.dialogDelete(a, file, onDeleteAction);
                 } else if (isMainTabs && canCopy && which == i++) {

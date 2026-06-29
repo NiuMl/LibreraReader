@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.ActionProvider;
@@ -85,6 +86,7 @@ public class MyPopupMenu {
         }
 
         final ListPopupWindow p1 = new ListPopupWindow(c);
+        p1.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
 
 
         if (AppState.get().isEnableAccessibility) {
@@ -108,13 +110,11 @@ public class MyPopupMenu {
                 final String stringRes = item.stringRes;
                 textView.setVisibility(TxtUtils.visibleIf(TxtUtils.isNotEmpty(stringRes)));
                 textView.setText(stringRes);
-                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                textView.setTextColor(Color.WHITE);
 
                 if (TxtUtils.isNotEmpty(item.fontPath)) {
                     textView.setTypeface(BookCSS.getTypeFaceForFont(item.fontPath));
-                }
-                if (AppState.get().appTheme == AppState.THEME_INK) {
-                    textView.setTextColor(Color.BLACK);
                 }
 
                 CheckBox checkbox1 = (CheckBox) layout.findViewById(R.id.checkbox1);
@@ -134,6 +134,10 @@ public class MyPopupMenu {
                 if (item.iconRes != 0) {
                     imageView.setVisibility(View.VISIBLE);
                     imageView.setImageResource(item.iconRes);
+                    android.widget.LinearLayout.LayoutParams params = new android.widget.LinearLayout.LayoutParams(
+                            Dips.dpToPx(27), Dips.dpToPx(27));
+                    params.setMargins(Dips.dpToPx(4), 0, Dips.dpToPx(4), 0);
+                    imageView.setLayoutParams(params);
                     if (item.iconRes == R.mipmap.icon_pdf_pro || Boolean.TRUE.equals(item.active)) {
                         TintUtil.setNoTintImage(imageView);
                     } else if (Boolean.FALSE.equals(item.active)) {
@@ -166,10 +170,12 @@ public class MyPopupMenu {
                         if (item.click != null) {
                             item.click.onMenuItemClick(new MyMenuItem(stringRes));
                         }
-                        try {
-                            p1.dismiss();
-                        } catch (Exception e) {
-                            LOG.e(e);
+                        if (item.dismissOnClick) {
+                            try {
+                                p1.dismiss();
+                            } catch (Exception e) {
+                                LOG.e(e);
+                            }
                         }
                     }
                 });
@@ -227,10 +233,10 @@ public class MyPopupMenu {
             p1.setAdapter(a);
 
             try {
-                p1.setWidth(measureContentWidth(a, c) + Dips.dpToPx(20));
+                p1.setWidth(Math.min(measureContentWidth(a, c) + Dips.dpToPx(10), Dips.dpToPx(120)));
             } catch (Exception e) {
                 LOG.e(e);
-                p1.setWidth(200);
+                p1.setWidth(Dips.dpToPx(100));
             }
             if(isLong) {
                 p1.setHeight(Dips.screenHeight() / 2 + Dips.dpToPx(80));
@@ -620,6 +626,7 @@ public class MyPopupMenu {
         boolean checkboxState;
         CompoundButton.OnCheckedChangeListener checkedChangeListener;
         private String fontPath;
+        boolean dismissOnClick = true;
 
         public Menu add(int res) {
             if(res>0) {
@@ -671,6 +678,11 @@ public class MyPopupMenu {
 
         public Menu setOnMenuItemLongClickListener(OnMenuItemClickListener onLongClick) {
             this.onLongClick = onLongClick;
+            return this;
+        }
+
+        public Menu setDismissOnClick(boolean dismiss) {
+            this.dismissOnClick = dismiss;
             return this;
         }
 

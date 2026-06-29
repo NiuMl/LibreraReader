@@ -81,7 +81,7 @@ public class BookCSS {
     public volatile int fontSizeSp = Dips.isXLargeScreen() ? 24 : 20;
     public float appFontScale = 1.0f;
     public String mp3BookPathJson;
-    public String dirLastPath;
+    public String dirLastPath = Environment.getExternalStorageDirectory().getPath();
     public String pathSAF = "";
     public boolean isSyncWifiOnly;
     public boolean isSyncPullToRefresh = true;
