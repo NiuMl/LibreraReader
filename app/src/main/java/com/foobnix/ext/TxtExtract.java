@@ -12,6 +12,8 @@ import com.foobnix.model.SimpleMeta;
 import com.foobnix.pdf.info.ExtUtils;
 import com.foobnix.pdf.info.model.BookCSS;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -54,7 +56,6 @@ public class TxtExtract {
 
         boolean isJSON = inputPath.endsWith(".json");
 
-        // 检测编码（只检测一次）
         Charset charset = StandardCharsets.UTF_8;
         if (AppState.get().isCharacterEncoding) {
             charset = Charset.forName(AppState.get().characterEncoding);
@@ -67,7 +68,6 @@ public class TxtExtract {
             }
         }
 
-        // 使用大缓冲区
         BufferedReader input = new BufferedReader(
             new InputStreamReader(new FileInputStream(inputPath), charset), 256 * 1024);
         
@@ -75,7 +75,6 @@ public class TxtExtract {
             new OutputStreamWriter(new FileOutputStream(cacheFile), StandardCharsets.UTF_8), 256 * 1024);
 
         try {
-            // 写入 HTML 头部（一次性写入）
             StringBuilder header = new StringBuilder(512);
             header.append("<!DOCTYPE html>\n<html>\n");
             if (AppState.get().isPreText) {
@@ -98,7 +97,6 @@ public class TxtExtract {
 
             List<SimpleMeta> replacements = AppData.get().getAllTextReplaces();
 
-            // 批量处理：每 1000 行批量写入一次
             StringBuilder batch = new StringBuilder(64 * 1024);
             int batchSize = 0;
             final int MAX_BATCH = 1000;
@@ -119,12 +117,10 @@ public class TxtExtract {
                 }
             }
             
-            // 写入剩余内容
             if (batchSize > 0) {
                 writer.write(batch.toString());
             }
 
-            // 写入尾部（一次性写入）
             StringBuilder footer = new StringBuilder(64);
             if (AppState.get().isLineBreaksText) {
                 footer.append("</p>\n");

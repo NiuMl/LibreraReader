@@ -7,6 +7,7 @@ import com.foobnix.model.AppBook;
 import com.foobnix.model.AppSP;
 import com.foobnix.model.AppState;
 import com.foobnix.pdf.info.ExtUtils;
+import com.foobnix.pdf.info.model.BookCSS;
 import com.foobnix.sys.TempHolder;
 import com.foobnix.ui2.AppDB;
 
@@ -64,11 +65,50 @@ public class DocumentModel extends ListenerProxy {
         }
     }
 
+    private static final java.util.Map<String, Integer> pageCountCache = new java.util.HashMap<>();
+    
     public void open(String fileName, String password) {
         if (!ExtUtils.isValidFile(fileName)) {
             throw new IllegalArgumentException("Invalid file:" + fileName);
         }
         decodeService.open(fileName, password);
+    }
+    
+    private int getCachedPageCount(String path, int w, int h, int fontSize) {
+        String key = path + "_" + w + "_" + h + "_" + fontSize;
+        Integer cached = pageCountCache.get(key);
+        if (cached != null) {
+            LOG.d("DocumentModel", "Using memory cached page count for " + path + ": " + cached);
+            return cached;
+        }
+        
+        FileMeta meta = AppDB.get().load(path);
+        if (meta != null && meta.getPages() > 0) {
+            LOG.d("DocumentModel", "Using DB cached page count for " + path + ": " + meta.getPages());
+            pageCountCache.put(key, meta.getPages());
+            return meta.getPages();
+        }
+        
+        LOG.d("DocumentModel", "No cached page count for " + path);
+        return 0;
+    }
+    
+    private void cachePageCount(String path, int w, int h, int fontSize, int count) {
+        if (count > 0) {
+            String key = path + "_" + w + "_" + h + "_" + fontSize;
+            pageCountCache.put(key, count);
+            LOG.d("DocumentModel", "Cached page count for " + path + ": " + count);
+            
+            try {
+                FileMeta meta = AppDB.get().load(path);
+                if (meta != null) {
+                    meta.setPages(count);
+                    AppDB.get().save(meta);
+                }
+            } catch (Exception e) {
+                LOG.e(e);
+            }
+        }
     }
 
     public Page[] getPages() {
@@ -224,8 +264,31 @@ public class DocumentModel extends ListenerProxy {
 
     private CodecPageInfo[] retrievePagesInfo(final IActivityController base, final AppBook bs,
                                               final IProgressIndicator task) {
-        int pagesCount = base.getDecodeService()
+        int w = base.getView().getWidth();
+        int h = base.getView().getHeight();
+        
+        if (w <= 0 || h <= 0) {
+            android.util.DisplayMetrics metrics = base.getContext().getResources().getDisplayMetrics();
+            w = metrics.widthPixels;
+            h = metrics.heightPixels;
+            LOG.d("DocumentModel", "Using DisplayMetrics for dimensions: " + w + "x" + h);
+        }
+        
+        int fontSize = BookCSS.get().fontSizeSp;
+        
+        LOG.d("DocumentModel", "retrievePagesInfo - path: " + bs.path + ", w: " + w + ", h: " + h + ", fontSize: " + fontSize);
+        
+        int pagesCount = getCachedPageCount(bs.path, w, h, fontSize);
+        
+        if (pagesCount <= 0) {
+            LOG.d("DocumentModel", "No cache hit, calling getPageCount()");
+            pagesCount = base.getDecodeService()
                              .getPageCount();
+            cachePageCount(bs.path, w, h, fontSize, pagesCount);
+        }
+        
+        LOG.d("DocumentModel", "pagesCount: " + pagesCount);
+        
         if (pagesCount <= 0) {
             CacheZipUtils.emptyAllCacheDirs();
             return null;
@@ -249,12 +312,12 @@ public class DocumentModel extends ListenerProxy {
 
         if (pagesFile.exists()) {
             final CodecPageInfo[] infos = pagesFile.load();
-            if (infos != null && infos.length == decodeService.getPageCount()) {
+            if (infos != null && infos.length == pagesCount) {
                 return infos;
             }
         }
 
-        final CodecPageInfo[] infos = new CodecPageInfo[decodeService.getPageCount()];
+        final CodecPageInfo[] infos = new CodecPageInfo[pagesCount];
         final CodecPageInfo unified = decodeService.getUnifiedPageInfo();
 
         for (int i = 0; i < infos.length; i++) {

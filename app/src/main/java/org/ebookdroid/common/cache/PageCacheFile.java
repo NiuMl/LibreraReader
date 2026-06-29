@@ -1,8 +1,10 @@
 package org.ebookdroid.common.cache;
 
+import com.foobnix.android.utils.Dips;
 import com.foobnix.android.utils.LOG;
 import com.foobnix.ext.CacheZipUtils;
 import com.foobnix.model.AppState;
+import com.foobnix.pdf.info.model.BookCSS;
 
 import org.ebookdroid.core.codec.CodecPageInfo;
 import org.emdev.utils.StringUtils;
@@ -23,7 +25,10 @@ public class PageCacheFile extends File {
 
     public static PageCacheFile getPageFile(final String path, int pages) {
         long lastModified = new File(path).lastModified();
-        final String md5 = StringUtils.md5(path + lastModified + pages + (AppState.get().fullScreenMode == AppState.FULL_SCREEN_FULLSCREEN));
+        int fontSize = BookCSS.get().fontSizeSp;
+        int w = Dips.screenWidth();
+        int h = Dips.screenHeight();
+        final String md5 = StringUtils.md5(path + lastModified + pages + (AppState.get().fullScreenMode == AppState.FULL_SCREEN_FULLSCREEN) + "_" + w + "_" + h + "_" + fontSize);
         LOG.d("getPageFile", "LAST" + md5);
         final File cacheDir = CacheZipUtils.CACHE_RECENT;
         LOG.d("PageCacheFile-getPageFile");

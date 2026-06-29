@@ -16,6 +16,7 @@ import com.foobnix.pdf.info.view.AlertDialogs;
 import com.foobnix.sys.AdvGuestureDetector;
 import com.foobnix.sys.TempHolder;
 
+import org.ebookdroid.BookType;
 import org.ebookdroid.common.settings.SettingsManager;
 import org.ebookdroid.common.settings.types.DocumentViewMode;
 import org.ebookdroid.common.settings.types.PageAlign;
@@ -166,9 +167,7 @@ public abstract class AbstractViewController extends AbstractComponentController
                 toPage = 0;
             }
 
-
             goToPage(toPage, bs.x, bs.y);
-
         }
     }
 
