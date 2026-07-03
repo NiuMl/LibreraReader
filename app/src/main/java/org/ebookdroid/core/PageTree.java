@@ -98,6 +98,10 @@ public class PageTree {
         return nodes[parentIndex];
     }
 
+    public boolean hasContent() {
+        return maxNodeId > 1;
+    }
+
     public boolean recycleAll(final List<Bitmaps> bitmapsToRecycle, final boolean includeRoot) {
         boolean res = false;
         if (includeRoot) {

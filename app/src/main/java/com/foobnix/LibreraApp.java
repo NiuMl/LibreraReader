@@ -4,6 +4,7 @@ import static com.foobnix.pdf.info.AppsConfig.SEARCH_FRAGMENT_WORKER_NAME;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ShortcutManager;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StrictMode;
@@ -59,6 +60,18 @@ public class LibreraApp extends MultiDexApplication {
         //AppsConfig.loadEngine(this);
 
         context = getApplicationContext();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            try {
+                ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+                if (shortcutManager != null) {
+                    shortcutManager.removeAllDynamicShortcuts();
+                }
+            } catch (Exception e) {
+                LOG.e(e);
+            }
+        }
+
         if (!WorkManager.isInitialized()) {
             WorkManager.initialize(this, new Configuration.Builder().setMinimumLoggingLevel(Log.DEBUG).build());
         }

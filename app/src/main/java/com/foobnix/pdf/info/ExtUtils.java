@@ -1823,17 +1823,10 @@ public class ExtUtils {
             UniversalDetector detector = new UniversalDetector(null);
 
             byte[] buf = new byte[8000];
-            int pos = 0;
-            int nread;
+            int nread = fis.read(buf);
             
-            while (pos < buf.length && (nread = fis.read(buf, pos, 1)) > 0) {
-                if (buf[pos] < 0) {
-                    pos++;
-                }
-            }
-            
-            if (pos > 0) {
-                detector.handleData(buf, 0, pos);
+            if (nread > 0) {
+                detector.handleData(buf, 0, nread);
             }
             detector.dataEnd();
 

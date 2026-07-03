@@ -208,12 +208,14 @@ public class EventDraw implements IEvent {
         canvas.drawRect(fixedPageBounds, viewState.paint.fillPaint);
 
         if (!BookCSS.get().isTextFormat()) {
-            final TextPaint textPaint = viewState.paint.textPaint;
-            textPaint.setTextSize(Dips.spToPx(16));
-            textPaint.setColor(MagicHelper.getTextColor());
+            if (page.nodes != null && page.nodes.hasContent()) {
+                final TextPaint textPaint = viewState.paint.textPaint;
+                textPaint.setTextSize(Dips.spToPx(16));
+                textPaint.setColor(MagicHelper.getTextColor());
 
-            final String text = LibreraApp.context.getString(R.string.page) + " " + (page.index.viewIndex + 1);
-            canvas.drawText(text, fixedPageBounds.centerX(), fixedPageBounds.centerY(), textPaint);
+                final String text = LibreraApp.context.getString(R.string.page) + " " + (page.index.viewIndex + 1);
+                canvas.drawText(text, fixedPageBounds.centerX(), fixedPageBounds.centerY(), textPaint);
+            }
         }
     }
 

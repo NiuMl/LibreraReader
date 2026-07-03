@@ -89,14 +89,14 @@ public class ImagePageFragment extends Fragment {
                     if (0 == getPriority()) {
                         handler.post(callback);
                     } else if (1 == getPriority()) {
-                        handler.postDelayed(callback, 200);
+                        handler.postDelayed(callback, 100);
                     } else {
-                        handler.postDelayed(callback, getPriority() * 200);
+                        handler.postDelayed(callback, getPriority() * 100);
                     }
                 }
 
             }
-        }, 150);
+        }, 50);
         lifeTime = System.currentTimeMillis();
 
 

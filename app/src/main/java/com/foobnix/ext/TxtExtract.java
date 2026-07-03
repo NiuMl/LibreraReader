@@ -47,7 +47,7 @@ public class TxtExtract {
     public static String extract(String inputPath, String outputDir) throws IOException {
         File inputFile = new File(inputPath);
         long inputLastModified = inputFile.lastModified();
-        String cacheFileName = inputPath.hashCode() + "_" + inputLastModified + "_" + AppState.get().isPreText + OUT_FB2_XML;
+        String cacheFileName = inputPath.hashCode() + "_" + inputLastModified + OUT_FB2_XML;
         File cacheFile = new File(outputDir, cacheFileName);
 
         if (cacheFile.exists()) {
@@ -69,10 +69,10 @@ public class TxtExtract {
         }
 
         BufferedReader input = new BufferedReader(
-            new InputStreamReader(new FileInputStream(inputPath), charset), 256 * 1024);
+            new InputStreamReader(new FileInputStream(inputPath), charset), 1024 * 1024);
         
         BufferedWriter writer = new BufferedWriter(
-            new OutputStreamWriter(new FileOutputStream(cacheFile), StandardCharsets.UTF_8), 256 * 1024);
+            new OutputStreamWriter(new FileOutputStream(cacheFile), StandardCharsets.UTF_8), 1024 * 1024);
 
         try {
             StringBuilder header = new StringBuilder(512);
@@ -97,23 +97,19 @@ public class TxtExtract {
 
             List<SimpleMeta> replacements = AppData.get().getAllTextReplaces();
 
-            StringBuilder batch = new StringBuilder(64 * 1024);
+            StringBuilder batch = new StringBuilder(256 * 1024);
             int batchSize = 0;
-            final int MAX_BATCH = 1000;
+            final int MAX_BATCH = 2000;
             
             String line;
             while ((line = input.readLine()) != null) {
-                String outLn = processLine(line, replacements, isJSON);
+                processLineFast(line, replacements, isJSON, batch);
+                batchSize++;
                 
-                if (outLn != null) {
-                    batch.append(outLn).append('\n');
-                    batchSize++;
-                    
-                    if (batchSize >= MAX_BATCH) {
-                        writer.write(batch.toString());
-                        batch.setLength(0);
-                        batchSize = 0;
-                    }
+                if (batchSize >= MAX_BATCH) {
+                    writer.write(batch.toString());
+                    batch.setLength(0);
+                    batchSize = 0;
                 }
             }
             
@@ -177,6 +173,69 @@ public class TxtExtract {
         }
         
         return outLn;
+    }
+
+    private static void processLineFast(String line, List<SimpleMeta> replacements, boolean isJSON, StringBuilder batch) {
+        if (AppState.get().isPreText) {
+            String outLn = retab(line, 8);
+            outLn = TextUtils.htmlEncode(outLn);
+            if (TxtUtils.isLineStartEndUpperCase(outLn)) {
+                batch.append("<b>").append(outLn).append("</b>\n");
+            } else {
+                batch.append(outLn).append('\n');
+            }
+        } else {
+            if (AppState.get().isLineBreaksText) {
+                if (line.trim().length() == 0) {
+                    batch.append("<br/>\n");
+                } else {
+                    formatFast(line, replacements, isJSON, batch, false);
+                }
+            } else {
+                if (line.trim().length() == 0) {
+                    batch.append("<p>&nbsp;</p>\n");
+                } else if (TxtUtils.isLineStartEndUpperCase(line)) {
+                    batch.append("<b>");
+                    formatFast(line, replacements, isJSON, batch, true);
+                } else if (line.contains("Title:")) {
+                    batch.append("<b>");
+                    formatFast(line, replacements, isJSON, batch, true);
+                } else {
+                    batch.append("<p>");
+                    formatFast(line, replacements, isJSON, batch, true);
+                }
+            }
+        }
+    }
+
+    private static void formatFast(String line, List<SimpleMeta> replacements, boolean isJSON, StringBuilder batch, boolean withClose) {
+        line = line.replace("\n", "").replace("\r", "");
+        line = TextUtils.htmlEncode(line);
+        if (BookCSS.get().isAutoHypens && TxtUtils.isNotEmpty(AppSP.get().hypenLang)) {
+            line = HypenUtils.applyHypnes(line, replacements);
+        }
+        line = line.trim();
+        if (replacements != null && AppState.get().isEnableTextReplacement) {
+            for (SimpleMeta simpleMeta : replacements) {
+                if (simpleMeta != null && TxtUtils.isNotEmpty(simpleMeta.name)) {
+                    line = line.replace(simpleMeta.name, simpleMeta.path);
+                }
+            }
+        }
+        line = line.replace("*", "");
+        line = foramtUB(line);
+        line = Fb2Extractor.accurateLine(line);
+        
+        if (isJSON) {
+            line = line.replace(",", ",<br/>");
+        }
+        
+        batch.append(line);
+        if (withClose) {
+            batch.append("</").append(isJSON ? "p>" : "p>").append('\n');
+        } else {
+            batch.append('\n');
+        }
     }
 
     public static String retab(final String text, final int tabstop) {

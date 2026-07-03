@@ -611,9 +611,12 @@ public class ViewerActivityController extends ActionController<VerticalViewActiv
                             int currentPage = dm.getCurrentIndex().docIndex;
                             LOG.d("ViewerActivityController", "TXT file detected, currentPage: " + currentPage);
                             if (currentPage > 0) {
-                                LOG.d("ViewerActivityController", "Auto flipping pages: " + (currentPage - 1) + " -> " + currentPage);
-                                getDocumentController().goToPage(currentPage - 1, bs.x, bs.y);
-                                getDocumentController().goToPage(currentPage, bs.x, bs.y);
+                                getDocumentController().getView().getView().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        getDocumentController().goToPage(currentPage, bs.x, bs.y);
+                                    }
+                                }, 50);
                             }
                         }
                         

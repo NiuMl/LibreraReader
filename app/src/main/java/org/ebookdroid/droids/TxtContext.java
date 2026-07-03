@@ -22,14 +22,9 @@ public class TxtContext extends PdfContext {
 
     @Override
     public File getCacheFileName(String fileNameOriginal) {
-        fileNameOriginal = fileNameOriginal +
-                AppState.get().isShowFooterNotesInText +
-                BookCSS.get().isAutoHypens +
-                AppState.get().isBionicMode +
-                AppState.get().enableImageScale +
-                BookCSS.get().documentStyle +
-                BookCSS.get().isCapitalLetter;
-        cacheFile = new File(CacheZipUtils.CACHE_BOOK_DIR, fileNameOriginal.hashCode() + ".epub");
+        File inputFile = new File(fileNameOriginal);
+        String cacheKey = fileNameOriginal + "_" + inputFile.lastModified();
+        cacheFile = new File(CacheZipUtils.CACHE_BOOK_DIR, cacheKey.hashCode() + ".epub");
         return cacheFile;
     }
 
