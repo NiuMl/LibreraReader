@@ -7,8 +7,8 @@ def taskName = getGradle().getStartParameter().getTaskRequests().toString()
 
 
 ext {
-    FDroidCodeNumber = 7062
-    FDroidVersionNumber = "9.4.8"
+    FDroidCodeNumber = 1
+    FDroidVersionNumber = "0.0.1"
 }
 
 
@@ -112,7 +112,7 @@ android {
             dimension = "version"
             applicationId = "com.foobnix.pro.pdf.reader"
             manifestPlaceholders = [
-                    appName      : "Librera FD",
+                    appName      : "执卷台",
                     appIcon      : "@mipmap/icon_pdf_pro",
                     appRoundIcon : "@mipmap/icon_pdf_pro",
                     appGdriveKey : "",
@@ -122,7 +122,7 @@ android {
                     admobRewardId  : "",
                     appSafeMode  : "true"
             ]
-            versionNameSuffix = '-fdroid'
+            versionNameSuffix = ''
         }
         librera {
             dimension = "version"
@@ -257,13 +257,13 @@ android {
                 output.versionCodeOverride = code
                 //def fullName = "Librera ${flavor}-${versionNumber}-c${code}-d${db}-${abiName}.apk"
 
-                def fullName = "Librera ${flavor}-${versionNumber}-${abiName}.apk"
+                def timestamp = System.currentTimeMillis()
+                def fullName = "执卷台-${versionNumber}-${abiName}_${timestamp}.apk"
 
                 output.outputFileName = fullName
             } else {
-                //def fullName = "Librera ${flavor}-${versionNumber}-c${codeNumber}-d${db}-universal.apk"
-                //def fullName = "Librera ${flavor}-${versionNumber}-universal.apk"
-                def fullName = "Librera ${flavor}-${versionNumber}-uni.apk"
+                def timestamp = System.currentTimeMillis()
+                def fullName = "执卷台-${versionNumber}-uni_${timestamp}.apk"
                 output.versionCodeOverride = codeNumber
                 output.outputFileName = fullName
             }
