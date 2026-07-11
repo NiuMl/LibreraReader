@@ -24,30 +24,65 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * MuPDF文档编解码器实现类。
+ * <p>
+ * 基于MuPDF库实现文档解码、页面渲染、注释管理等功能，支持PDF、EPUB等多种格式。
+ */
 public class MuPdfDocument extends AbstractCodecDocument {
 
+    /** PDF格式标识 */
     public static final int FORMAT_PDF = 0;
 
+    /** 元信息：作者 */
     public static final String META_INFO_AUTHOR = "info:Author";
+    /** 元信息：标题 */
     public static final String META_INFO_TITLE = "info:Title";
+    /** 元信息：主题 */
     public static final String META_INFO_SUBJECT = "info:Subject";
+    /** 元信息：关键词 */
     public static final String META_INFO_KEYWORDS = "info:Keywords";
+    /** 元信息：创建者 */
     public static final String META_INFO_CREATOR = "info:Creator";
+    /** 元信息：生产者 */
     public static final String META_INFO_PRODUCER = "info:Producer";
+    /** 元信息：创建日期 */
     public static final String META_INFO_CREATIONDATE = "info:CreationDate";
+    /** 元信息：修改日期 */
     public static final String META_INFO_MODIFICATIONDATE = "info:ModDate";
+
+    /** 缓存的文档句柄 */
     private static long cacheHandle;
+    /** 缓存的宽高和 */
     private static int cacheWH;
+    /** 缓存的字体大小 */
     private static long cacheSize;
+    /** 缓存的页数 */
     private static int cacheCount;
+
+    /** 页面宽度 */
     int w, h;
+    /** 书籍类型 */
     BookType bookType;
+    /** 是否为EPUB格式 */
     private boolean isEpub = false;
+    /** 脚注映射 */
     private volatile Map<String, String> footNotes;
+    /** 媒体附件列表 */
     private volatile List<String> mediaAttachment;
+    /** 页数 */
     private int pagesCount = -1;
+    /** 文件路径 */
     private String fname;
 
+    /**
+     * 构造函数。
+     *
+     * @param context MuPDF上下文
+     * @param format  格式标识
+     * @param fname   文件路径
+     * @param pwd     密码
+     */
     public MuPdfDocument(final MuPdfContext context, final int format, final String fname, final String pwd) {
         super(context, openFile(format, fname, pwd, BookCSS.get()
                                                            .toCssString(fname)));
@@ -56,6 +91,16 @@ public class MuPdfDocument extends AbstractCodecDocument {
         bookType = BookType.getByUri(fname);
     }
 
+    /**
+     * 归一化链接目标矩形。
+     * <p>
+     * 将链接目标矩形从页面坐标转换为归一化坐标。
+     *
+     * @param docHandle 文档句柄
+     * @param targetPage 目标页面
+     * @param targetRect 目标矩形
+     * @param flags      标志位
+     */
     static void normalizeLinkTargetRect(final long docHandle, final int targetPage, final RectF targetRect,
                                         final int flags) {
 
@@ -85,20 +130,48 @@ public class MuPdfDocument extends AbstractCodecDocument {
         }
     }
 
+    /**
+     * 获取页面信息。
+     *
+     * @param docHandle 文档句柄
+     * @param pageNumber 页面索引
+     * @param cpi       页面信息对象
+     * @return 结果码
+     */
     native static int getPageInfo(long docHandle, int pageNumber, CodecPageInfo cpi);
 
-    // 'info:Title'
-    // 'info:Author'
-    // 'info:Subject'
-    // 'info:Keywords'
-    // 'info:Creator'
-    // 'info:Producer'
-    // 'info:CreationDate'
-    // 'info:ModDate'
+    /**
+     * 获取文档元信息。
+     * <p>
+     * 支持的元信息包括：Title、Author、Subject、Keywords、Creator、Producer、CreationDate、ModDate。
+     *
+     * @param docHandle 文档句柄
+     * @param option    元信息键
+     * @return 元信息值
+     */
     private native static String getMeta(long docHandle, final String option);
 
+    /**
+     * 设置文档元数据。
+     *
+     * @param docHandle 文档句柄
+     * @param key       键
+     * @param value     值
+     * @return 结果
+     */
     private native static String setMetaData(long docHandle, final String key, String value);
 
+    /**
+     * 打开文件。
+     * <p>
+     * 使用MuPDF库打开文档，配置内存大小、样式、抗锯齿等参数。
+     *
+     * @param format 格式标识
+     * @param fname  文件路径
+     * @param pwd    密码
+     * @param css    CSS样式
+     * @return 文档句柄
+     */
     private static long openFile(final int format, String fname, final String pwd, String css) {
         TempHolder.lock.lock();
         try {
@@ -132,13 +205,47 @@ public class MuPdfDocument extends AbstractCodecDocument {
         }
     }
 
+    /**
+     * 获取MuPDF版本号。
+     *
+     * @return 版本字符串
+     */
     public static native String getFzVersion();
 
+    /**
+     * 打开文档的原生方法。
+     *
+     * @param storememory 内存大小
+     * @param format      格式
+     * @param fname       文件路径
+     * @param pwd         密码
+     * @param css         CSS样式
+     * @param useDocStyle 是否使用文档样式
+     * @param scale       缩放比例
+     * @param antialias   抗锯齿级别
+     * @param accel       加速缓存路径
+     * @param isImageScale 是否启用图像缩放
+     * @return 文档句柄
+     */
     private static native long open(int storememory, int format, String fname, String pwd, String css, int useDocStyle,
                                     float scale, int antialias, String accel, int isImageScale);
 
+    /**
+     * 释放文档资源。
+     *
+     * @param handle 文档句柄
+     */
     private static native void free(long handle);
 
+    /**
+     * 获取页数（带异常处理）。
+     *
+     * @param handle 文档句柄
+     * @param w      宽度
+     * @param h      高度
+     * @param size   字体大小
+     * @return 页数
+     */
     private int getPageCountWithException(final long handle, int w, int h, int size) {
         final int count = getPageCountSafe(handle, w, h, Dips.spToPx(size));
 //        if (count == 0) {
@@ -147,6 +254,17 @@ public class MuPdfDocument extends AbstractCodecDocument {
         return count;
     }
 
+    /**
+     * 获取页数（安全版本）。
+     * <p>
+     * 使用缓存机制减少重复计算，支持并发访问。
+     *
+     * @param handle 文档句柄
+     * @param w      宽度
+     * @param h      高度
+     * @param size   字体大小
+     * @return 页数
+     */
     private int getPageCountSafe(long handle, int w, int h, int size) {
 
         LOG.d("getPageCountSafe w h size", w, h, size);
@@ -174,12 +292,32 @@ public class MuPdfDocument extends AbstractCodecDocument {
         }
     }
 
+    /**
+     * 获取页数的原生方法。
+     *
+     * @param handle 文档句柄
+     * @param w      宽度
+     * @param h      高度
+     * @param size   字体大小
+     * @return 页数
+     */
     private static native int getPageCount(long handle, int w, int h, int size);
 
+    /**
+     * 获取文件路径。
+     *
+     * @return 文件路径
+     */
     public String getPath() {
         return fname;
     }
 
+    /**
+     * 设置元信息。
+     *
+     * @param key   键
+     * @param value 值
+     */
     @Override public void setMeta(String key, String value) {
         TempHolder.lock.lock();
         try {
@@ -190,10 +328,22 @@ public class MuPdfDocument extends AbstractCodecDocument {
         }
     }
 
+    /**
+     * 获取书籍类型。
+     *
+     * @return 书籍类型
+     */
     @Override public BookType getBookType() {
         return bookType;
     }
 
+    /**
+     * 将文档转换为HTML。
+     * <p>
+     * 遍历所有页面，将每个页面转换为HTML并拼接。
+     *
+     * @return HTML字符串
+     */
     @Override public String documentToHtml() {
         StringBuilder out = new StringBuilder();
         int pages = getPageCount();
@@ -205,14 +355,29 @@ public class MuPdfDocument extends AbstractCodecDocument {
         return out.toString();
     }
 
+    /**
+     * 获取脚注映射。
+     *
+     * @return 脚注映射
+     */
     @Override public Map<String, String> getFootNotes() {
         return footNotes;
     }
 
+    /**
+     * 设置脚注映射。
+     *
+     * @param footNotes 脚注映射
+     */
     public void setFootNotes(Map<String, String> footNotes) {
         this.footNotes = footNotes;
     }
 
+    /**
+     * 获取文档大纲。
+     *
+     * @return 大纲链接列表
+     */
     @Override public synchronized List<OutlineLink> getOutline() {
         if (isRecycled()) {
             LOG.d("getOutline doc isRecycled");
@@ -222,16 +387,34 @@ public class MuPdfDocument extends AbstractCodecDocument {
         return ou.getOutline(this);
     }
 
+    /**
+     * 获取页面。
+     *
+     * @param pageNumber 页面索引
+     * @return 编解码器页面
+     */
     @Override public CodecPage getPageInner(final int pageNumber) {
         MuPdfPage createPage = MuPdfPage.createPage(this, pageNumber + 1);
         return createPage;
     }
 
+    /**
+     * 获取页数。
+     *
+     * @return 页数
+     */
     @Override public int getPageCount() {
         LOG.d("MuPdfDocument,getPageCount", getW(), getH(), BookCSS.get().fontSizeSp);
         return getPageCountWithException(documentHandle, getW(), getH(), BookCSS.get().fontSizeSp);
     }
 
+    /**
+     * 获取统一页面信息。
+     * <p>
+     * 对于EPUB格式，返回统一的页面尺寸；对于其他格式，返回null。
+     *
+     * @return 页面信息
+     */
     @Override public CodecPageInfo getUnifiedPageInfo() {
         if (isEpub) {
             LOG.d("MuPdfDocument, getUnifiedPageInfo");
@@ -241,6 +424,14 @@ public class MuPdfDocument extends AbstractCodecDocument {
         }
     }
 
+    /**
+     * 获取页数。
+     *
+     * @param w    宽度
+     * @param h    高度
+     * @param size 字体大小
+     * @return 页数
+     */
     @Override
     public int getPageCount(int w, int h, int size) {
         this.w = w;
@@ -250,14 +441,30 @@ public class MuPdfDocument extends AbstractCodecDocument {
         return pageCountWithException;
     }
 
+    /**
+     * 获取宽度。
+     *
+     * @return 宽度
+     */
     public int getW() {
         return w > 0 ? w : Dips.screenWidth();
     }
 
+    /**
+     * 获取高度。
+     *
+     * @return 高度
+     */
     public int getH() {
         return h > 0 ? h : Dips.screenHeight();
     }
 
+    /**
+     * 获取页面信息。
+     *
+     * @param pageNumber 页面索引
+     * @return 页面信息
+     */
     @Override public CodecPageInfo getPageInfo(final int pageNumber) {
         final CodecPageInfo info = new CodecPageInfo();
         TempHolder.lock.lock();
@@ -275,6 +482,9 @@ public class MuPdfDocument extends AbstractCodecDocument {
         }
     }
 
+    /**
+     * 释放文档资源。
+     */
     @Override protected void freeDocument() {
         TempHolder.lock.lock();
         try {
@@ -287,6 +497,12 @@ public class MuPdfDocument extends AbstractCodecDocument {
         LOG.d("MUPDF! <<< recycle [document]", documentHandle, ExtUtils.getFileName(fname));
     }
 
+    /**
+     * 获取元信息。
+     *
+     * @param option 元信息键
+     * @return 元信息值
+     */
     @Override public String getMeta(final String option) {
         TempHolder.lock.lock();
         try {
@@ -329,20 +545,48 @@ public class MuPdfDocument extends AbstractCodecDocument {
         }
     }
 
+    /**
+     * 获取书籍标题。
+     *
+     * @return 标题
+     */
     @Override public String getBookTitle() {
         return getMeta("info:Title");
     }
 
+    /**
+     * 获取书籍作者。
+     *
+     * @return 作者
+     */
     @Override public String getBookAuthor() {
         return getMeta("info:Author");
     }
 
+    /**
+     * 保存文档的原生方法。
+     *
+     * @param handle 文档句柄
+     * @param path   保存路径
+     */
     private native void saveInternal(long handle, String path);
 
+    /**
+     * 检查文档是否有更改的原生方法。
+     *
+     * @param handle 文档句柄
+     * @return 是否有更改
+     */
     private native boolean hasChangesInternal(long handle);
 
+    /** 是否有更改 */
     boolean isHasChanges = false;
 
+    /**
+     * 检查文档是否有更改。
+     *
+     * @return 是否有更改
+     */
     @Override public boolean hasChanges() {
 
         if (isHasChanges) {
@@ -359,6 +603,11 @@ public class MuPdfDocument extends AbstractCodecDocument {
         }
     }
 
+    /**
+     * 保存注释。
+     *
+     * @param path 保存路径
+     */
     @Override public void saveAnnotations(String path) {
         LOG.d("Save Annotations saveInternal 1");
         TempHolder.lock.lock();
@@ -370,10 +619,26 @@ public class MuPdfDocument extends AbstractCodecDocument {
         }
     }
 
+    /**
+     * 搜索文本。
+     * <p>
+     * MuPDF文档不支持直接搜索文本，抛出异常。
+     *
+     * @param pageNuber 页面索引
+     * @param pattern   搜索模式
+     * @return 匹配区域列表
+     * @throws DocSearchNotSupported 如果文档不支持搜索
+     */
     @Override public List<RectF> searchText(final int pageNuber, final String pattern) throws DocSearchNotSupported {
         throw new DocSearchNotSupported();
     }
 
+    /**
+     * 删除注释。
+     *
+     * @param pageHandle 页面句柄
+     * @param index      注释索引
+     */
     @Override public void deleteAnnotation(long pageHandle, int index) {
         TempHolder.lock.lock();
         try {
@@ -384,12 +649,29 @@ public class MuPdfDocument extends AbstractCodecDocument {
 
     }
 
+    /**
+     * 删除注释的原生方法。
+     *
+     * @param docHandle 文档句柄
+     * @param pageHandle 页面句柄
+     * @param annot_index 注释索引
+     */
     private native void deleteAnnotationInternal(long docHandle, long pageHandle, int annot_index);
 
+    /**
+     * 设置媒体附件列表。
+     *
+     * @param mediaAttachment 媒体附件列表
+     */
     public void setMediaAttachment(List<String> mediaAttachment) {
         this.mediaAttachment = mediaAttachment;
     }
 
+    /**
+     * 获取媒体附件列表。
+     *
+     * @return 媒体附件列表
+     */
     @Override public List<String> getMediaAttachments() {
         return mediaAttachment;
     }

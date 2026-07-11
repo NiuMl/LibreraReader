@@ -49,17 +49,32 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * 文档解码服务基类。
+ * <p>
+ * 实现DecodeService接口，提供文档解码、页面渲染、注释管理等核心功能。
+ * 使用后台线程执行解码任务，支持任务优先级和自动资源回收。
+ */
 public class DecodeServiceBase implements DecodeService {
 
+    /** 任务ID生成器 */
     static final AtomicLong TASK_ID_SEQ = new AtomicLong();
 
+    /** 编解码器上下文 */
     final CodecContext codecContext;
+    /** 是否已回收 */
     final AtomicBoolean isRecycled = new AtomicBoolean();
+    /** 视图状态 */
     final AtomicReference<ViewState> viewState = new AtomicReference<ViewState>();
+    /** 解码任务映射 */
     final Map<PageTreeNode, DecodeTask> decodingTasks = new IdentityHashMap<PageTreeNode, DecodeTask>();
+    /** 任务列表 */
     final List<Task> tasks = new ArrayList<Task>();
+    /** 任务执行器 */
     ExecutorRunnable executor = new ExecutorRunnable();
+    /** 编解码器文档 */
     private CodecDocument codecDocument;
+    /** 页面缓存，自动回收最老的页面 */
     private Map<Integer, CodecPageHolder> pages = new LinkedHashMap<Integer, CodecPageHolder>() {
 
         private static final long serialVersionUID = -8845124816503128098L;
@@ -81,8 +96,15 @@ public class DecodeServiceBase implements DecodeService {
         }
 
     };
+    /** 视图接口 */
     private IView view;
 
+    /**
+     * 构造函数。
+     *
+     * @param codecContext 编解码器上下文
+     * @param view         视图接口
+     */
     public DecodeServiceBase(final CodecContext codecContext, IView view) {
         this.codecContext = codecContext;
         this.view = view;
@@ -288,6 +310,14 @@ public class DecodeServiceBase implements DecodeService {
 
     }
 
+    /**
+     * 执行页面解码。
+     * <p>
+     * 核心解码流程：获取页面Holder、检查裁剪、计算缩放尺寸、渲染位图、
+     * 获取链接和注释、完成解码。处理内存溢出异常。
+     *
+     * @param task 解码任务
+     */
     void performDecode(final DecodeTask task) {
         if (executor.isTaskDead(task)) {
             return;
@@ -368,6 +398,15 @@ public class DecodeServiceBase implements DecodeService {
         }
     }
 
+    /**
+     * 检查并处理页面裁剪。
+     * <p>
+     * 如果启用了裁剪设置且页面未被裁剪过，渲染缩略图并计算裁剪边界。
+     *
+     * @param task   解码任务
+     * @param vuPage 编解码器页面
+     * @return 裁剪后的页面边界
+     */
     RectF checkCropping(final DecodeTask task, final CodecPage vuPage) {
         // Checks if cropping setting is not set
         if (task.viewState.book == null || !task.viewState.book.cp) {
@@ -425,26 +464,64 @@ public class DecodeServiceBase implements DecodeService {
         return croppedPageBounds;
     }
 
+    /**
+     * 获取缩放后的页面尺寸。
+     *
+     * @param node              页面树节点
+     * @param zoom              缩放比例
+     * @param croppedPageBounds 裁剪后的页面边界
+     * @param vuPage            编解码器页面
+     * @return 缩放后的矩形尺寸
+     */
     Rect getScaledSize(final PageTreeNode node, final float zoom, final RectF croppedPageBounds, final CodecPage vuPage) {
         final RectF pageBounds = MathUtils.zoom(croppedPageBounds != null ? croppedPageBounds : node.page.bounds, zoom);
         final RectF r = Page.getTargetRect(node.page.type, pageBounds, node.pageSliceBounds);
         return new Rect(0, 0, (int) r.width(), (int) r.height());
     }
 
+    /**
+     * 完成解码。
+     *
+     * @param currentDecodeTask 当前解码任务
+     * @param page              编解码器页面
+     * @param bitmap            位图引用
+     * @param bitmapBounds      位图边界
+     * @param croppedPageBounds 裁剪后的页面边界
+     */
     void finishDecoding(final DecodeTask currentDecodeTask, final CodecPage page, final BitmapRef bitmap, final Rect bitmapBounds, final RectF croppedPageBounds) {
         stopDecoding(currentDecodeTask.node, "complete");
         updateImage(currentDecodeTask, page, bitmap, bitmapBounds, croppedPageBounds);
     }
 
+    /**
+     * 中止解码。
+     *
+     * @param currentDecodeTask 当前解码任务
+     * @param page              编解码器页面
+     * @param bitmap            位图引用
+     */
     void abortDecoding(final DecodeTask currentDecodeTask, final CodecPage page, final BitmapRef bitmap) {
         stopDecoding(currentDecodeTask.node, "failed");
         updateImage(currentDecodeTask, page, bitmap, null, null);
     }
 
+    /**
+     * 获取页面。
+     *
+     * @param pageIndex 页面索引
+     * @return 编解码器页面
+     */
     CodecPage getPage(final int pageIndex) {
         return getPageHolder(-2, pageIndex).getPage(-2);
     }
 
+    /**
+     * 获取页面Holder，自动清理无效页面并创建新的Holder。
+     *
+     * @param taskId   任务ID
+     * @param pageIndex 页面索引
+     * @return 页面Holder
+     */
     private synchronized CodecPageHolder getPageHolder(final long taskId, final int pageIndex) {
         for (final Iterator<Map.Entry<Integer, CodecPageHolder>> i = getPages().entrySet().iterator(); i.hasNext(); ) {
             final Map.Entry<Integer, CodecPageHolder> entry = i.next();
@@ -469,6 +546,15 @@ public class DecodeServiceBase implements DecodeService {
         return holder;
     }
 
+    /**
+     * 更新图像。
+     *
+     * @param currentDecodeTask 当前解码任务
+     * @param page              编解码器页面
+     * @param bitmap            位图引用
+     * @param bitmapBounds      位图边界
+     * @param croppedPageBounds 裁剪后的页面边界
+     */
     void updateImage(final DecodeTask currentDecodeTask, final CodecPage page, final BitmapRef bitmap, final Rect bitmapBounds, final RectF croppedPageBounds) {
         currentDecodeTask.node.decodeComplete(page, bitmap, bitmapBounds, croppedPageBounds);
     }
@@ -629,10 +715,19 @@ public class DecodeServiceBase implements DecodeService {
         }
     }
 
+    /**
+     * 任务执行器。
+     * <p>
+     * 在后台线程中执行解码任务，支持任务优先级排序和任务取消。
+     */
     class ExecutorRunnable implements Runnable, org.ebookdroid.core.ExecutorRunnable {
 
+        /** 是否运行中 */
         final AtomicBoolean run = new AtomicBoolean(true);
 
+        /**
+         * 构造函数，启动执行器线程。
+         */
         ExecutorRunnable() {
             //Thread t = new Thread(this, "@T Decoding");
             //t.setPriority(CoreSettings.getInstance().decodingThreadPriority);
@@ -658,6 +753,13 @@ public class DecodeServiceBase implements DecodeService {
             }
         }
 
+        /**
+         * 获取下一个任务。
+         * <p>
+         * 根据优先级排序任务列表，返回优先级最高的任务。如果没有任务则等待1秒。
+         *
+         * @return 下一个任务，无任务时返回null
+         */
         Runnable nextTask() {
             // TempHolder.lock.lock();
             try {
@@ -703,6 +805,11 @@ public class DecodeServiceBase implements DecodeService {
             return null;
         }
 
+        /**
+         * 添加任意任务。
+         *
+         * @param task 任务
+         */
         public void addAny(final Task task) {
 
             // TempHolder.lock.lock();
@@ -729,6 +836,13 @@ public class DecodeServiceBase implements DecodeService {
             }
         }
 
+        /**
+         * 添加解码任务。
+         * <p>
+         * 如果相同页面已有解码任务且未取消，则跳过。否则取消旧任务并添加新任务。
+         *
+         * @param task 解码任务
+         */
         public void add(final DecodeTask task) {
 
             // TempHolder.lock.lock();
@@ -766,6 +880,13 @@ public class DecodeServiceBase implements DecodeService {
             }
         }
 
+        /**
+         * 停止解码任务。
+         *
+         * @param task   任务（可为null，此时通过node查找）
+         * @param node   页面树节点
+         * @param reason 停止原因
+         */
         public void stopDecoding(final DecodeTask task, final PageTreeNode node, final String reason) {
             // TempHolder.lock.lock();
             try {
@@ -787,10 +908,19 @@ public class DecodeServiceBase implements DecodeService {
             }
         }
 
+        /**
+         * 检查任务是否已取消。
+         *
+         * @param task 任务
+         * @return 是否已取消
+         */
         public boolean isTaskDead(final DecodeTask task) {
             return task.cancelled.get();
         }
 
+        /**
+         * 回收资源，停止所有解码任务。
+         */
         public void recycle() {
             // TempHolder.lock.lock();
             try {
@@ -812,6 +942,9 @@ public class DecodeServiceBase implements DecodeService {
         }
 
 
+        /**
+         * 关闭执行器。
+         */
         public void shutdown() {
             Safe.run(new Runnable() {
 
@@ -822,6 +955,11 @@ public class DecodeServiceBase implements DecodeService {
             });
         }
 
+        /**
+         * 内部关闭方法。
+         * <p>
+         * 停止执行、回收页面缓存、回收文档和编解码器上下文。
+         */
         private void shutdownInner() {
 
             LOG.d("Begin shutdown 1");
@@ -852,10 +990,21 @@ public class DecodeServiceBase implements DecodeService {
 
     }
 
+    /**
+     * 任务比较器。
+     * <p>
+     * 首先按优先级排序，然后对解码任务按页面树节点排序，最后按任务ID排序。
+     */
     class TaskComparator implements Comparator<Task> {
 
+        /** 页面树节点比较器 */
         final PageTreeNodeComparator cmp;
 
+        /**
+         * 构造函数。
+         *
+         * @param viewState 视图状态
+         */
         public TaskComparator(final ViewState viewState) {
             cmp = viewState != null ? new PageTreeNodeComparator(viewState) : null;
         }
@@ -884,20 +1033,41 @@ public class DecodeServiceBase implements DecodeService {
 
     }
 
+    /**
+     * 抽象任务类。
+     * <p>
+     * 所有任务的基类，包含任务ID、取消状态和优先级。
+     */
     abstract class Task implements Runnable {
 
+        /** 任务ID */
         final long id = TASK_ID_SEQ.incrementAndGet();
+        /** 是否已取消 */
         final AtomicBoolean cancelled = new AtomicBoolean();
+        /** 优先级 */
         final int priority;
 
+        /**
+         * 构造函数。
+         *
+         * @param priority 优先级
+         */
         Task(final int priority) {
             this.priority = priority;
         }
 
     }
 
+    /**
+     * 关闭任务。
+     * <p>
+     * 用于关闭解码服务。
+     */
     class ShutdownTask extends Task {
 
+        /**
+         * 构造函数。
+         */
         public ShutdownTask() {
             super(0);
         }
@@ -908,14 +1078,33 @@ public class DecodeServiceBase implements DecodeService {
         }
     }
 
+    /**
+     * 添加注释任务。
+     * <p>
+     * 在指定页面添加注释。
+     */
     class AddAnnotationTask extends Task {
 
+        /** 点坐标映射 */
         private Map<Integer, List<PointF>> points;
+        /** 颜色 */
         private int color;
+        /** 结果回调 */
         private ResultResponse<Pair<Integer, List<Annotation>>> onResult;
+        /** 线宽 */
         private float width;
+        /** 透明度 */
         private float alpha;
 
+        /**
+         * 构造函数。
+         *
+         * @param points 点坐标映射
+         * @param color 颜色
+         * @param width 线宽
+         * @param alpha 透明度
+         * @param result 结果回调
+         */
         public AddAnnotationTask(Map<Integer, List<PointF>> points, int color, float width, float alpha, ResultResponse<Pair<Integer, List<Annotation>>> result) {
             super(1);
             this.points = points;
@@ -945,15 +1134,31 @@ public class DecodeServiceBase implements DecodeService {
         }
     }
 
+    /**
+     * 解码任务。
+     * <p>
+     * 用于解码指定页面，包含页面树节点、视图状态和页面编号。
+     */
     class DecodeTask extends Task {
 
+        /** 任务ID */
         final long id = TASK_ID_SEQ.incrementAndGet();
+        /** 是否已取消 */
         final AtomicBoolean cancelled = new AtomicBoolean();
 
+        /** 页面树节点 */
         final PageTreeNode node;
+        /** 视图状态 */
         final ViewState viewState;
+        /** 页面编号 */
         final int pageNumber;
 
+        /**
+         * 构造函数。
+         *
+         * @param viewState 视图状态
+         * @param node 页面树节点
+         */
         DecodeTask(final ViewState viewState, final PageTreeNode node) {
             super(2);
             this.pageNumber = node.page.index.docIndex;

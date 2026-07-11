@@ -26,26 +26,45 @@ import org.emdev.utils.LengthUtils;
 
 import java.util.Queue;
 
+/**
+ * 页面绘制事件类。
+ * <p>
+ * 负责页面的绘制工作，包括背景绘制、页面内容渲染、链接高亮、选中文本高亮等。
+ * 实现了IEvent接口，作为事件驱动架构中的绘制事件。
+ */
 public class EventDraw implements IEvent {
 
+    /** 矩形绘制画笔 */
     static Paint rect = new Paint();
 
     static {
         rect.setColor(Color.DKGRAY);
         rect.setStrokeWidth(Dips.DP_1);
         rect.setStyle(Style.STROKE);
-
     }
 
+    /** 固定页面边界 */
     final RectF fixedPageBounds = new RectF();
+    /** 事件队列，用于对象复用 */
     private final Queue<EventDraw> eventQueue;
+    /** 视图状态 */
     public ViewState viewState;
+    /** 页面树层级 */
     public PageTreeLevel level;
+    /** 画布对象 */
     public Canvas canvas;
+    /** 页面边界 */
     RectF pageBounds;
+    /** 链接绘制画笔 */
     Paint paintWrods = new Paint();
+    /** 活动控制器 */
     private IActivityController base;
 
+    /**
+     * 构造函数。
+     *
+     * @param eventQueue 事件队列，用于对象复用
+     */
     EventDraw(final Queue<EventDraw> eventQueue) {
         this.eventQueue = eventQueue;
         paintWrods.setAlpha(60);
@@ -53,6 +72,13 @@ public class EventDraw implements IEvent {
         paintWrods.setTextSize(30);
     }
 
+    /**
+     * 初始化事件。
+     *
+     * @param viewState 视图状态
+     * @param canvas    画布对象
+     * @param base      活动控制器
+     */
     void init(final ViewState viewState, final Canvas canvas, IActivityController base) {
         this.viewState = viewState;
         this.base = base;
@@ -61,6 +87,13 @@ public class EventDraw implements IEvent {
 
     }
 
+    /**
+     * 从已有事件复制初始化。
+     *
+     * @param event   源事件
+     * @param canvas  画布对象
+     * @param base    活动控制器
+     */
     void init(final EventDraw event, final Canvas canvas, IActivityController base) {
         this.base = base;
         this.viewState = event.viewState;
@@ -68,6 +101,9 @@ public class EventDraw implements IEvent {
         this.canvas = canvas;
     }
 
+    /**
+     * 释放资源并将对象放回队列。
+     */
     void release() {
         this.canvas = null;
         this.level = null;
@@ -76,6 +112,11 @@ public class EventDraw implements IEvent {
         eventQueue.offer(this);
     }
 
+    /**
+     * 处理绘制事件，绘制整个视图。
+     *
+     * @return 视图状态
+     */
     @Override
     public ViewState process() {
         try {
@@ -97,6 +138,14 @@ public class EventDraw implements IEvent {
         }
     }
 
+    /**
+     * 处理页面绘制。
+     * <p>
+     * 绘制页面背景、页面内容、背景图片、页码等。
+     *
+     * @param page 页面对象
+     * @return 是否处理成功
+     */
     @Override
     public boolean process(final Page page) {
         pageBounds = viewState.getBounds(page);
@@ -154,16 +203,35 @@ public class EventDraw implements IEvent {
         return res;
     }
 
+    /**
+     * 处理页面树绘制。
+     *
+     * @param nodes 页面树
+     * @return 是否处理成功
+     */
     @Override
     public boolean process(final PageTree nodes) {
         return process(nodes, level);
     }
 
+    /**
+     * 处理页面树绘制（指定层级）。
+     *
+     * @param nodes  页面树
+     * @param level  页面树层级
+     * @return 是否处理成功
+     */
     @Override
     public boolean process(final PageTree nodes, final PageTreeLevel level) {
         return nodes.process(this, level, false);
     }
 
+    /**
+     * 处理页面树节点绘制。
+     *
+     * @param node 页面树节点
+     * @return 是否处理成功
+     */
     @Override
     public boolean process(final PageTreeNode node) {
         final RectF nodeRect = node.getTargetRect(pageBounds);
@@ -190,11 +258,26 @@ public class EventDraw implements IEvent {
         }
     }
 
+    /**
+     * 绘制子节点。
+     *
+     * @param node     父节点
+     * @param child    子节点
+     * @param nodeRect 父节点矩形
+     * @return 是否绘制成功
+     */
     public boolean paintChild(final PageTreeNode node, final PageTreeNode child, final RectF nodeRect) {
         final RectF childRect = child.getTargetRect(pageBounds);
         return child.holder.drawBitmap(canvas, viewState.paint, viewState.viewBase, childRect, nodeRect);
     }
 
+    /**
+     * 绘制页面背景。
+     * <p>
+     * 绘制页面背景颜色，并在非文本格式下显示页码。
+     *
+     * @param page 页面对象
+     */
     protected void drawPageBackground(final Page page) {
         if (canvas == null) {
             LOG.d("canvas is null");
@@ -220,6 +303,13 @@ public class EventDraw implements IEvent {
     }
 
 
+    /**
+     * 绘制页面链接。
+     * <p>
+     * 在链接位置绘制下划线表示可点击区域。
+     *
+     * @param page 页面对象
+     */
     private void drawPageLinks(final Page page) {
 
         if (LengthUtils.isEmpty(page.links)) {
@@ -239,6 +329,13 @@ public class EventDraw implements IEvent {
         }
     }
 
+    /**
+     * 绘制调试内容。
+     * <p>
+     * 用于调试目的，绘制一个品红色矩形。
+     *
+     * @param page 页面对象
+     */
     private void drawSomething(final Page page) {
         final RectF link = new RectF(0.1f, 0.1f, 0.3f, 0.3f);
         final RectF rect = page.getPageRegion(pageBounds, new RectF(link));
@@ -249,6 +346,13 @@ public class EventDraw implements IEvent {
         canvas.drawRect(rect, p);
     }
 
+    /**
+     * 绘制选中文本高亮。
+     * <p>
+     * 绘制选中区域的高亮矩形。
+     *
+     * @param page 页面对象
+     */
     private void drawSelectedText(final Page page) {
         final Paint p = new Paint();
         p.setColor(AppState.get().isDayNotInvert ? Color.BLUE : Color.YELLOW);

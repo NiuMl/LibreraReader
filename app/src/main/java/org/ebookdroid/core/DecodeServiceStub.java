@@ -20,6 +20,12 @@ import org.ebookdroid.droids.mupdf.codec.TextWord;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 解码服务存根类。
+ * <p>
+ * DecodeService接口的空实现，所有方法返回默认值或执行空操作。
+ * 用于在解码服务未初始化时作为占位符使用。
+ */
 public class DecodeServiceStub implements DecodeService {
 
 	@Override

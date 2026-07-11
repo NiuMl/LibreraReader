@@ -100,21 +100,41 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
+/**
+ * 扩展工具类。
+ * <p>
+ * 提供文件操作、编码检测、MIME类型处理、文件打开等通用工具方法。
+ */
 public class ExtUtils {
+    /** 重排EPUB文件后缀 */
     public static final String REFLOW_EPUB = "-reflow.epub";
+    /** 重排HTML文件后缀 */
     public static final String REFLOW_HTML = "-reflow.html";
+    /** 其他书籍扩展名列表 */
     public final static List<String> otherExts = Arrays.asList(AppState.OTHER_BOOK_EXT);
+    /** LibreOffice支持的扩展名列表 */
     public final static List<String> lirbeExt = Arrays.asList(AppState.LIBRE_EXT);
+    /** 图片扩展名列表 */
     public final static List<String> imageExts = Arrays.asList(".png", ".jpg", ".jpeg", ".gif", ".webp");
+    /** 图片MIME类型列表 */
     public final static List<String> imageMimes = Arrays.asList("image/png", "image/jpg", "image/jpeg", "image/gif");
+    /** 压缩文件扩展名列表 */
     public final static List<String> archiveExts = Arrays.asList(AppState.OTHER_ARCH_EXT);
+    /** 支持浏览的扩展名列表 */
     public final static List<String> browseExts = BookType.getAllSupportedExtensions();
+    /** 音频文件扩展名列表 */
     public final static List<String> AUDIO = Arrays.asList(".mp3", ".mp4", ".wav", ".ogg", ".m4a", ".m4b", ".flac");
+    /** PNG图片Base64前缀 */
     private static final String IMAGE_PNG_BASE64 = "data:image/png;base64,";
+    /** JPEG图片Base64前缀 */
     private static final String IMAGE_JPEG_BASE64 = "data:image/jpeg;base64,";
+    /** 图片开始标记 */
     private static final String IMAGE_BEGIN = "<image-begin>";
+    /** 图片结束标记 */
     private static final String IMAGE_END = "<image-end>";
+    /** MIME类型缓存映射 */
     public static Map<String, String> mimeCache = new HashMap<String, String>();
+    /** 搜索扩展名列表 */
     public static List<String> seachExts = new ArrayList<String>();
     static List<String> video = Arrays.asList(".webm",
                                               ".m3u8",
@@ -1817,6 +1837,15 @@ public class ExtUtils {
         return encdogin;
     }
 
+    /**
+     * 检测TXT文件编码。
+     * <p>
+     * 使用UniversalDetector库检测文件编码，读取前8KB数据进行分析。
+     * 如果检测失败，返回用户指定的默认编码。
+     *
+     * @param fis 输入流
+     * @return 检测到的编码名称，或默认编码
+     */
     public static String determineTxtEncoding(InputStream fis) {
         String encoding = null;
         try {

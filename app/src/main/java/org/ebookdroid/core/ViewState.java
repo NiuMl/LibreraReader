@@ -14,21 +14,37 @@ import org.ebookdroid.core.models.DocumentModel;
 import org.ebookdroid.ui.viewer.IView;
 import org.ebookdroid.ui.viewer.IViewController;
 
+/**
+ * 视图状态类。
+ * <p>
+ * 封装阅读器视图的当前状态，包括应用设置、书籍信息、控制器、模型、视图参数等。
+ */
 public class ViewState {
 
+    /** 核心设置 */
     public final CoreSettings app;
+    /** 书籍设置 */
     public final AppBook book;
+    /** 视图控制器 */
     public final IViewController ctrl;
+    /** 文档模型 */
     public final DocumentModel model;
 
+    /** 视图矩形 */
     public final RectF viewRect;
+    /** 视图基准点 */
     public final PointF viewBase;
 
+    /** 是否夜间模式 */
     public final boolean nightMode;
+    /** 缩放比例 */
     public final float zoom;
+    /** 页面对齐方式 */
     public final PageAlign pageAlign;
+    /** 页面绘制器 */
     public final PagePaint paint;
 
+    /** 页面集合 */
     public final Pages pages;
 
     public ViewState(final PageTreeNode node) {

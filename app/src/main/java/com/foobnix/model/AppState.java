@@ -36,36 +36,63 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 应用状态管理类。
+ * <p>
+ * 采用单例模式，管理应用的所有全局配置和状态，包括主题、颜色、阅读设置、TTS设置等。
+ */
 public class AppState {
+    /** 代理类型 - HTTP */
     public static final String PROXY_HTTP = "HTTP";
+    /** 代理类型 - SOCKS */
     public static final String PROXY_SOCKS = "SOCKS";
+    /** 日间模式文本颜色 */
     public static final String TEXT_COLOR_DAY = "#000000";
+    /** 夜间模式文本颜色 */
     public static final String TEXT_COLOR_NIGHT = "#000000";
-    public static final long APP_CLOSE_AUTOMATIC = TimeUnit.MINUTES.toMillis(500);// SECONDS, MINUTES
+    /** 自动关闭时间（毫秒） */
+    public static final long APP_CLOSE_AUTOMATIC = TimeUnit.MINUTES.toMillis(500);
+    /** UI更新时间间隔（毫秒） */
     public static final long APP_UPDATE_TIME_IN_UI = TimeUnit.SECONDS.toMillis(30);
-    // public static final long APP_CLOSE_AUTOMATIC =
-    // TimeUnit.SECONDS.toMillis(5);
+    /** 日间模式透明度 */
     public static final int DAY_TRANSPARENCY = 200;
+    /** 夜间模式透明度 */
     public static final int NIGHT_TRANSPARENCY = 160;
+    /** PNG格式 */
     public static final String PNG = "PNG";
+    /** JPG格式 */
     public static final String JPG = "JPG";
+    /** LibreOffice文档扩展名 */
     public static final String[] LIBRE_EXT = ".odp, .pptx, .ppt" .split(", ");
+    /** 其他书籍格式扩展名 */
     public static final String[] OTHER_BOOK_EXT =
             ".abw, .docm, .lwp, .n, .rst, .sdw, .tex, .wpd, .wps, .zabw, .cbc, .chm, .lit, .lrf, .oeb, .pml, .rb, .snb, .tcr, .txtz, .azw1, .tpz" .split(
                     ", ");
+    /** 其他压缩包格式扩展名 */
     public static final String[] OTHER_ARCH_EXT =
             ".img, .rar, .7z, .arj, .bz2, .bzip2, .tbz2, .tbz, .txz, .cab, .gz, .gzip, .tgz, .iso, .lzh, .lha, .lzma, .tar, .xar, .z, .taz, .xz, .dmg" .split(
                     ", ");
+    /** 滚动模式偏好文件类型 */
     public static final String PREF_SCROLL_MODE = "pdf, djvu";
+    /** 书籍模式偏好文件类型 */
     public static final String PREF_BOOK_MODE = "epub, mobi, fb2, azw, azw3";
+    /** 音乐模式偏好文件类型 */
     public static final String PREF_MUSIC_MODE = "";
+    /** 主题 - 亮色 */
     public static final int THEME_LIGHT = 0;
+    /** 主题 - 暗色 */
     public static final int THEME_DARK = 1;
+    /** 主题 - OLED暗色 */
     public static final int THEME_DARK_OLED = 2;
+    /** 主题 - 墨水屏 */
     public static final int THEME_INK = 3;
+    /** 全屏模式 - 正常 */
     public static final int FULL_SCREEN_NORMAL = 0;
+    /** 全屏模式 - 全屏 */
     public static final int FULL_SCREEN_FULLSCREEN = 1;
+    /** 全屏模式 - 全屏(支持刘海屏) */
     public static final int FULL_SCREEN_FULLSCREEN_CUTOUT = 2;
+    /** 可用颜色列表 */
     public static final List<String> COLORS = Arrays.asList(//
             "#000001", //
             "#000002", //
@@ -87,6 +114,7 @@ public class AppState {
             "#FFFFFF", //
             "#CDDC39"//
                                                            );
+    /** 样式颜色列表 */
     public static final List<String> STYLE_COLORS = Arrays.asList(//
             "#4ECDC4", // Mint Green
             "#EA5964", //
@@ -94,12 +122,14 @@ public class AppState {
             "#000000" //
 
                                                                  );
+    /** 强调色列表 */
     public static final List<String> ACCENT_COLORS = Arrays.asList(//
             "#E3C800", //
             "#EA5964", //
             "#00897B", //
             "#FFFFFF", //
             "#000000");
+    /** 默认OPDS链接 */
     public final static String OPDS_DEFAULT = "" + //
 
             //"https://www.feedbooks.com/catalog.atom,Feedbooks,Free ebooks,assets://opds/feedbooks.ico;" + //
@@ -114,6 +144,7 @@ public class AppState {
             //
             // end
             ;
+    /** 默认阅读颜色配置 */
     public final static String READ_COLORS_DEAFAUL =
             // (name),(bg),(text),(0-day 1-nigth)
             "" + //
@@ -124,6 +155,7 @@ public class AppState {
                     "A,#3a3a3a,#c8c8c8,1;" + //
                     "B,#000000,#8cffb5,1;" + //
                     "C,#000000,#ffffff,1;"; //
+    /** TTS文本替换规则 */
     public static final String TTS_REPLACEMENTS =
 
             "{'*[()\"«»*”“/\\\\[\\\\]]':' ' , " +//
@@ -131,60 +163,114 @@ public class AppState {
                     "'it’s':'it is' , " +//
                     "'#bla':'bla disabled' , " +//
                     "'*(L|l)ibre.':'$1ibréra'}";//
+    /** TTS标点符号 */
     public static final String TTS_PUNCUATIONS = ".;:!?";
+    /** 默认标签页顺序 */
     public static final String DEFAULTS_TABS_ORDER = "0#1,1#1,2#1,3#0,4#1,5#0,6#0,7#0,8#1";
+    /** 小组件尺寸列表 */
     final public static List<Integer> WIDGET_SIZE = Arrays.asList(0, 70, 100, 150, 200, 250);
+    /** 最大速度 */
     public final static int MAX_SPEED = 149;
+    /** 模式 - 网格 */
     public final static int MODE_GRID = 1;
+    /** 模式 - 列表 */
     public final static int MODE_LIST = 2;
+    /** 模式 - 封面 */
     public final static int MODE_COVERS = 3;
+    /** 模式 - 作者 */
     public final static int MODE_AUTHORS = 4;
+    /** 模式 - 分类 */
     public final static int MODE_GENRE = 5;
+    /** 模式 - 系列 */
     public final static int MODE_SERIES = 6;
+    /** 模式 - 紧凑列表 */
     public final static int MODE_LIST_COMPACT = 7;
+    /** 模式 - 用户标签 */
     public final static int MODE_USER_TAGS = 8;
+    /** 模式 - 关键词 */
     public final static int MODE_KEYWORDS = 9;
+    /** 模式 - 语言 */
     public final static int MODE_LANGUAGES = 10;
+    /** 模式 - 出版日期 */
     public final static int MODE_PUBLICATION_DATE = 11;
+    /** 模式 - 出版社 */
     public final static int MODE_PUBLISHER = 12;
+    /** 书签模式 - 按日期 */
     public final static int BOOKMARK_MODE_BY_DATE = 1;
+    /** 书签模式 - 按书籍 */
     public final static int BOOKMARK_MODE_BY_BOOK = 2;
     // end
+    /** 双击动作 - 自动滚动 */
     public final static int DOUBLE_CLICK_AUTOSCROLL = 0;
+    /** 双击动作 - 调整页面 */
     public final static int DOUBLE_CLICK_ADJUST_PAGE = 1;
+    /** 双击动作 - 无操作 */
     public final static int DOUBLE_CLICK_NOTHING = 2;
+    /** 双击动作 - 缩放 */
     public final static int DOUBLE_CLICK_ZOOM_IN_OUT = 3;
+    /** 双击动作 - 水平居中 */
     public final static int DOUBLE_CLICK_CENTER_HORIZONTAL = 4;
+    /** 双击动作 - 关闭书籍 */
     public final static int DOUBLE_CLICK_CLOSE_BOOK = 5;
+    /** 双击动作 - 关闭书籍并退出应用 */
     public final static int DOUBLE_CLICK_CLOSE_BOOK_AND_APP = 6;
+    /** 双击动作 - 关闭并隐藏应用 */
     public final static int DOUBLE_CLICK_CLOSE_HIDE_APP = 7;
+    /** 双击动作 - 开始/停止TTS */
     public final static int DOUBLE_CLICK_START_STOP_TTS = 8;
+    /** 双击动作 - 分享页面 */
     public final static int DOUBLE_CLICK_SHARE_PAGE = 9;
+    /** 排序方式 - 按路径 */
     public final static int BR_SORT_BY_PATH = 0;
+    /** 排序方式 - 按日期 */
     public final static int BR_SORT_BY_DATE = 1;
+    /** 排序方式 - 按大小 */
     public final static int BR_SORT_BY_SIZE = 2;
+    /** 排序方式 - 按标题 */
     public final static int BR_SORT_BY_TITLE = 3;// not possible
+    /** 排序方式 - 按编号 */
     public final static int BR_SORT_BY_NUMBER = 4;// not possible
+    /** 排序方式 - 按页数 */
     public final static int BR_SORT_BY_PAGES = 5;// not possible
+    /** 排序方式 - 按扩展名 */
     public final static int BR_SORT_BY_EXT = 6;// not possible
+    /** 排序方式 - 按作者 */
     public final static int BR_SORT_BY_AUTHOR = 7;// not possible
+    /** 排序方式 - 按收藏时间 */
     public final static int BR_SORT_BY_STAR_TIME = 8;
+    /** 下一页滚动方式 - 按页 */
     public final static int NEXT_SCREEN_SCROLL_BY_PAGES = 0;
+    /** 大纲显示 - 显示标题和子标题 */
     public final static int OUTLINE_HEADERS_AND_SUBHEADERES = 0;
+    /** 大纲显示 - 仅显示标题 */
     public final static int OUTLINE_ONLY_HEADERS = 1;
+    /** 页码格式 - 数字 */
     public final static int PAGE_NUMBER_FORMAT_NUMBER = 0;
+    /** 页码格式 - 百分比 */
     public final static int PAGE_NUMBER_FORMAT_PERCENT = 1;
+    /** 章节格式1 */
     public final static int CHAPTER_FORMAT_1 = 0;
+    /** 章节格式2 */
     public final static int CHAPTER_FORMAT_2 = 1;
+    /** 章节格式3 */
     public final static int CHAPTER_FORMAT_3 = 2;
+    /** 章节格式4 */
     public final static int CHAPTER_FORMAT_4 = 4;
+    /** 自动亮度 */
     public final static int AUTO_BRIGTNESS = -1000;
+    /** 阅读模式 - 滚动 */
     public final static int READING_MODE_SCROLL = 1;
+    /** 阅读模式 - 书籍 */
     public final static int READING_MODE_BOOK = 2;
+    /** 阅读模式 - 音乐 */
     public final static int READING_MODE_MUSICIAN = 3;
+    /** 阅读模式 - 标签管理 */
     public final static int READING_MODE_TAG_MANAGER = 4;
+    /** 阅读模式 - 打开方式 */
     public final static int READING_MODE_OPEN_WITH = 5;
+    /** 阅读模式 - 选择模式 */
     public final static int READING_MODE_SELECT_MODE = 6;
+    /** 应用词典键列表 */
     public final static List<String> appDictionariesKeys = Arrays.asList(//
             "search", //
             "lingvo", //
@@ -206,35 +292,61 @@ public class AppState {
 
             //
                                                                         );
+    /** 语言代码列表 */
     public static final List<String> langCodes =
             Arrays.asList("ar", "be", "bg", "ca", "cs", "de", "el", "en", "es", "eu", "fa", "fi", "fr", "ga", "he",
                     "hi", "hu", "id", "it", "ja", "kk", "ko", "la", "lt", "ml", "nl", "no", "pl", "pt", "ro", "ru",
                     "sc", "sk", "sv", "sw", "ta", "th", "tr", "uk", "vi", "zh-rCN", "zh-rTW","gl");
+    /** 书签排序 - 页码升序 */
     public static final int BOOKMARK_SORT_PAGE_ASC = 0;
+    /** 书签排序 - 页码降序 */
     public static final int BOOKMARK_SORT_PAGE_DESC = 1;
+    /** 书签排序 - 日期升序 */
     public static final int BOOKMARK_SORT_DATE_ASC = 2;
+    /** 书签排序 - 日期降序 */
     public static final int BOOKMARK_SORT_DATE_DESC = 3;
+    /** 文件格式转换器映射 */
     public static Map<String, String[]> CONVERTERS = new LinkedHashMap<>();
+    /** TTS引擎映射 */
     public static Map<String, String> TTS_ENGINES = new LinkedHashMap<>();
+    /** 白色 */
     public static int COLOR_WHITE = Color.WHITE;
+    /** 白色2 */
     public static int COLOR_WHITE_2 = Color.parseColor("#c8c8c8");
     // public static int COLOR_BLACK = Color.parseColor("#030303");
+    /** 黑色 */
     public static int COLOR_BLACK = Color.BLACK;
+    /** 黑色2 */
     public static int COLOR_BLACK_2 = Color.parseColor("#3a3a3a");
+    /** 日间模式前景色 */
     public static int COLOR_DAY_FG = Color.parseColor("#F2F2F2");
+    /** 夜间模式前景色 */
     public static int COLOR_NIGHT_FG = Color.parseColor("#0B0B0B");
+    /** 小组件类型 - 列表 */
     public static int WIDGET_LIST = 1;
+    /** 小组件类型 - 网格 */
     public static int WIDGET_GRID = 2;
+    /** 编辑模式 - 无 */
     public static int EDIT_NONE = 0;
+    /** 编辑模式 - 笔 */
     public static int EDIT_PEN = 1;
+    /** 编辑模式 - 删除 */
     public static int EDIT_DELETE = 2;
+    /** 点击动作 - 下一页 */
     public static int TAP_NEXT_PAGE = 0;
+    /** 点击动作 - 上一页 */
     public static int TAP_PREV_PAGE = 1;
+    /** 点击动作 - 无操作 */
     public static int TAP_DO_NOTHING = 2;
+    /** 状态栏位置 - 顶部 */
     public static int STATUSBAR_POSITION_TOP = 1;
+    /** 状态栏位置 - 底部 */
     public static int STATUSBAR_POSITION_BOTTOM = 2;
+    /** 蓝光滤镜默认颜色 */
     public static int BLUE_FILTER_DEFAULT_COLOR = Color.BLACK;
+    /** 系统语言标记 */
     public static String MY_SYSTEM_LANG = "my";
+    /** 下一页按键列表 */
     public static List<Integer> NEXT_KEYS = Arrays.asList(//
             KeyEvent.KEYCODE_VOLUME_UP, //
             KeyEvent.KEYCODE_PAGE_UP, //
@@ -245,6 +357,7 @@ public class AppState {
             105 //
             // KeyEvent.KEYCODE_DEL//
                                                          );
+    /** 上一页按键列表 */
     public static List<Integer> PREV_KEYS = Arrays.asList(//
             KeyEvent.KEYCODE_VOLUME_DOWN, //
             KeyEvent.KEYCODE_PAGE_DOWN, //
@@ -256,19 +369,31 @@ public class AppState {
             // KeyEvent.KEYCODE_ENTER //
 
                                                          );
+    /** 动作 - 书籍模式 */
     public static int ACTION_BOOK_MODE = 1;
+    /** 动作 - 滚动模式 */
     public static int ACTION_SCROLL_MODE = 2;
+    /** 动作 - 音乐模式 */
     public static int ACTION_MUSIC_MODE = 3;
+    /** 动作 - 选择视图模式 */
     public static int ACTION_SELECT_VIEW_MODE = 4;
+    /** 动作 - 标签管理 */
     public static int ACTION_TAG_MANGER = 5;
+    /** 动作 - 打开方式 */
     public static int ACTION_OPEN_WITH = 6;
+    /** 动作 - 书籍信息 */
     public static int ACTION_BOOK_INFORMATION = 7;
+    /** 动作 - 书籍菜单 */
     public static int ACTION_BOOK_MENU = 8;
 
+    /** 默认视图模式 */
     public int defaultViewMode = ACTION_BOOK_MODE;
+    /** 默认单击动作 */
     public int defaultSingleClick = ACTION_SELECT_VIEW_MODE;
+    /** 默认长按动作 */
     public int defaultLongClick = ACTION_BOOK_MENU;
 
+    /** 单例实例 */
     private static AppState instance = new AppState();
 
     static {
@@ -598,15 +723,31 @@ public class AppState {
     public boolean isShowSeriesNumberInTitle = true;
     public boolean enableImageScale = true;
 
+    /**
+     * 获取单例实例。
+     *
+     * @return AppState实例
+     */
     public static synchronized AppState get() {
         return instance;
     }
 
+    /**
+     * 获取应用语言。
+     *
+     * @return 语言代码
+     */
     public String getAppLang() {
         return AppState.get().appLang.equals(com.foobnix.model.AppState.MY_SYSTEM_LANG) ? Urls.getLangCode() :
                 com.foobnix.model.AppState.get().appLang;
     }
 
+    /**
+     * 将按键列表转换为字符串。
+     *
+     * @param list 按键列表
+     * @return 字符串
+     */
     public static String keyToString(final List<Integer> list) {
         Collections.sort(list);
         final StringBuilder line = new StringBuilder();
@@ -617,6 +758,12 @@ public class AppState {
         return line.toString();
     }
 
+    /**
+     * 将字符串转换为按键列表。
+     *
+     * @param list 字符串
+     * @return 按键列表
+     */
     public static List<Integer> stringToKyes(final String list) {
         final List<Integer> res = new ArrayList<>();
 
@@ -630,14 +777,31 @@ public class AppState {
         return res;
     }
 
+    /**
+     * 获取下一页按键列表。
+     *
+     * @return 按键列表
+     */
     public List<Integer> getNextKeys() {
         return isReverseKeys ? prevKeys : nextKeys;
     }
 
+    /**
+     * 获取上一页按键列表。
+     *
+     * @return 按键列表
+     */
     public List<Integer> getPrevKeys() {
         return isReverseKeys ? nextKeys : prevKeys;
     }
 
+    /**
+     * 初始化默认设置。
+     * <p>
+     * 设置模式名称、主题、颜色等默认值，处理墨水屏设备和无障碍模式。
+     *
+     * @param a 上下文
+     */
     public void defaults(Context a) {
         nameVerticalMode = a.getString(R.string.mode_vertical);
         nameHorizontalMode = a.getString(R.string.mode_horizontally);
@@ -683,6 +847,9 @@ public class AppState {
        // }
     }
 
+    /**
+     * 初始化无障碍模式默认设置。
+     */
     public void accessibilityDefaults() {
         AppState.get().isEnableAccessibility = true;
         AppState.get().tabWithNames = false;
@@ -695,6 +862,14 @@ public class AppState {
                 UITab.PrefFragment.index + "#1");
     }
 
+    /**
+     * 加载并初始化配置。
+     * <p>
+     * 如果尚未加载，执行默认初始化并加载保存的配置，处理配置迁移。
+     *
+     * @param a 上下文
+     * @return 是否已初始化过
+     */
     public boolean loadInit(final Context a) {
         boolean init = isLoaded;
 
@@ -739,6 +914,11 @@ public class AppState {
         return init;
     }
 
+    /**
+     * 加载配置。
+     *
+     * @param a 上下文
+     */
     public void load(final Context a) {
         if (a == null) {
             return;
@@ -747,6 +927,13 @@ public class AppState {
         IO.readObj(AppProfile.syncState, instance);
     }
 
+    /**
+     * 保存配置。
+     * <p>
+     * 仅当配置发生变化时才保存，通过哈希值判断。
+     *
+     * @param a 上下文
+     */
     public void save(final Context a) {
         LOG.d("AppState-save");
         if (a == null) {

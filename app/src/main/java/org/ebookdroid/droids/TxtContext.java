@@ -16,10 +16,25 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * TXT文件上下文处理类。
+ * <p>
+ * 负责TXT文件的打开、缓存管理和EPUB转换。继承自PdfContext，
+ * 将TXT文件转换为EPUB格式后再使用MuPDF渲染。
+ */
 public class TxtContext extends PdfContext {
 
+    /** 缓存文件对象 */
     File cacheFile;
 
+    /**
+     * 获取缓存文件名。
+     * <p>
+     * 使用文件路径和修改时间作为缓存键，确保文件内容不变时使用缓存。
+     *
+     * @param fileNameOriginal 原始文件名
+     * @return 缓存文件对象
+     */
     @Override
     public File getCacheFileName(String fileNameOriginal) {
         File inputFile = new File(fileNameOriginal);
@@ -28,6 +43,16 @@ public class TxtContext extends PdfContext {
         return cacheFile;
     }
 
+    /**
+     * 打开TXT文档。
+     * <p>
+     * 如果缓存文件存在则直接使用，否则将TXT转换为EPUB格式后再打开。
+     * 优先使用原生解析器（TxtParser），如果不可用则回退到Java解析器（TxtExtract）。
+     *
+     * @param fileName 文件路径
+     * @param password 密码（TXT文件不使用）
+     * @return 文档对象
+     */
     @Override
     public CodecDocument openDocumentInner(String fileName, String password) {
         if (cacheFile == null) {
@@ -57,6 +82,16 @@ public class TxtContext extends PdfContext {
         return muPdfDocument;
     }
 
+    /**
+     * 使用原生解析器提取TXT内容并转换为EPUB。
+     * <p>
+     * 调用TxtParser.so原生库进行解析，如果失败则回退到Java解析器。
+     *
+     * @param txtPath  TXT文件路径
+     * @param epubPath 输出EPUB文件路径
+     * @return EPUB文件路径
+     * @throws IOException IO异常
+     */
     private String extractWithNativeParser(String txtPath, String epubPath) throws IOException {
         TxtParser parser = new TxtParser();
         try {
@@ -74,6 +109,16 @@ public class TxtContext extends PdfContext {
         return convertHtmlToEpub(htmlPath, epubPath);
     }
 
+    /**
+     * 将HTML文件转换为EPUB格式。
+     * <p>
+     * 创建标准的EPUB文件结构，包含mimetype、container.xml、content.opf、ncx和HTML内容。
+     *
+     * @param htmlPath  HTML文件路径
+     * @param epubPath 输出EPUB文件路径
+     * @return EPUB文件路径
+     * @throws IOException IO异常
+     */
     private String convertHtmlToEpub(String htmlPath, String epubPath) throws IOException {
         java.io.FileInputStream fis = new java.io.FileInputStream(htmlPath);
         byte[] htmlBytes = new byte[(int) new File(htmlPath).length()];
@@ -100,6 +145,14 @@ public class TxtContext extends PdfContext {
         return epubPath;
     }
 
+    /**
+     * 向ZIP输出流写入文件内容。
+     *
+     * @param zos     ZIP输出流
+     * @param name    文件名
+     * @param content 文件内容
+     * @throws IOException IO异常
+     */
     private static void writeToZip(ZipOutputStream zos, String name, String content) throws IOException {
         ZipEntry entry = new ZipEntry(name);
         zos.putNextEntry(entry);

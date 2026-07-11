@@ -32,19 +32,37 @@ import com.foobnix.sys.ImageExtractor;
 import java.util.concurrent.Future;
 
 
+/**
+ * 图片页面片段。
+ * <p>
+ * 负责显示漫画/图片格式书籍的页面，支持延迟加载和优先级管理。
+ */
 public class ImagePageFragment extends Fragment {
+    /** 页面位置参数名 */
     public static final String POS = "pos";
+    /** 页面路径参数名 */
     public static final String PAGE_PATH = "pagePath";
+    /** 是否文本格式参数名 */
     public static final String IS_TEXTFORMAT = "isTEXT";
+    /** 计数器 */
     public static volatile int count = 0;
+    /** 页码 */
     int page;
+    /** 处理器，用于延迟加载 */
     Handler handler;
+    /** 生命周期时间 */
     long lifeTime = 0;
+    /** 图片加载ID */
     int loadImageId;
+    /** 是否首次加载 */
     boolean fistTime = true;
+    /** Glide图片加载目标 */
     CustomTarget<Bitmap> target = null;
+    /** 异步任务提交 */
     Future<?> submit;
+    /** 页面图片视图 */
     private PageImaveView image;
+    /** 页码文本视图 */
     private TextView text;
     Runnable callback = new Runnable() {
 
@@ -59,10 +77,25 @@ public class ImagePageFragment extends Fragment {
 
     };
 
+    /**
+     * 获取页面路径。
+     *
+     * @return 页面图片路径
+     */
     public String getPath() {
         return getArguments().getString(PAGE_PATH);
     }
 
+    /**
+     * 创建视图。
+     * <p>
+     * 初始化页面图片视图和页码文本，设置延迟加载机制。
+     *
+     * @param inflater           布局加载器
+     * @param container          容器
+     * @param savedInstanceState 保存的实例状态
+     * @return 视图对象
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.page_n, container, false);
@@ -103,6 +136,11 @@ public class ImagePageFragment extends Fragment {
         return view;
     }
 
+    /**
+     * 使用线程池加载图片。
+     * <p>
+     * 通过executorServiceSingle提交异步任务加载图片，支持任务取消。
+     */
     public void loadImageGlide21() {
 
         submit = AppsConfig.executorServiceSingle.submit(new Runnable() {
@@ -134,6 +172,11 @@ public class ImagePageFragment extends Fragment {
 
     }
 
+    /**
+     * 使用Loader加载图片。
+     * <p>
+     * 通过LoaderManager和AsyncTaskLoader异步加载图片。
+     */
     public void loadImageGlide2() {
         final LoaderManager.LoaderCallbacks<Bitmap> callback = new LoaderManager.LoaderCallbacks<Bitmap>() {
             @NonNull
@@ -168,6 +211,11 @@ public class ImagePageFragment extends Fragment {
         LoaderManager.getInstance(getActivity()).initLoader(getPath().hashCode(), null, callback).forceLoad();
     }
 
+    /**
+     * 使用Glide加载图片（当前使用的方法）。
+     * <p>
+     * 通过Glide库异步加载图片，加载完成后隐藏页码文本。
+     */
     public void loadImageGlide() {
         if (image != null && image.getWidth() == 0) {
             return;
@@ -195,6 +243,11 @@ public class ImagePageFragment extends Fragment {
                 .into(target);
     }
 
+    /**
+     * 恢复视图。
+     * <p>
+     * 初始化点击工具，检查并应用自动适配。
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -214,11 +267,23 @@ public class ImagePageFragment extends Fragment {
         }
     }
 
+    /**
+     * 获取页面加载优先级。
+     * <p>
+     * 根据当前页面与目标页面的距离计算优先级，距离越近优先级越高。
+     *
+     * @return 优先级值（0-10）
+     */
     public int getPriority() {
         return Math.min(Math.abs(PageImageState.currentPage - page), 10);
     }
 
 
+    /**
+     * 销毁视图。
+     * <p>
+     * 清理Glide加载任务，移除Handler回调，释放资源。
+     */
     @Override
     public void onDestroyView() {
 

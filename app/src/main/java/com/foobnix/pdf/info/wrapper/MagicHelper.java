@@ -34,11 +34,26 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * 颜色和图像处理辅助类。
+ * <p>
+ * 提供颜色转换、图像缩放、背景处理、对比度调整等功能。
+ * 支持日间/夜间模式的颜色适配和图像魔术效果。
+ */
 public class MagicHelper {
 
+    /** 亮度阈值 */
     private static final int LIGHT_VALUE = 450;
+    /** 是否需要亮度/对比度调整 */
     public static volatile boolean isNeedBC = true;
 
+    /**
+     * 计算配置哈希值。
+     * <p>
+     * 根据AppState和BookCSS的哈希值生成组合哈希。
+     *
+     * @return 哈希值
+     */
     public static int hash() {
         StringBuilder builder = new StringBuilder();
 
@@ -50,6 +65,12 @@ public class MagicHelper {
 
     }
 
+    /**
+     * 获取更深的颜色。
+     *
+     * @param color 原始颜色
+     * @return 加深后的颜色
+     */
     public static int darkerColor(int color) {
         float[] hsv = new float[3];
         Color.colorToHSV(color, hsv);
@@ -57,7 +78,15 @@ public class MagicHelper {
         return Color.HSVToColor(hsv);
     }
 
-    // - darker, + ligther
+    /**
+     * 调整颜色亮度。
+     * <p>
+     * 值为负时加深颜色，值为正时变亮颜色。
+     *
+     * @param color 原始颜色
+     * @param value 亮度调整值（负值加深，正值变亮）
+     * @return 调整后的颜色
+     */
     public static int otherColor(int color, float value) {
         float[] hsv = new float[3];
         Color.colorToHSV(color, hsv);
@@ -65,6 +94,14 @@ public class MagicHelper {
         return Color.HSVToColor(hsv);
     }
 
+    /**
+     * 缩放并居中裁剪图像（字节数组版本）。
+     *
+     * @param source 源图像字节数组
+     * @param w 目标宽度
+     * @param h 目标高度
+     * @return 处理后的图像字节流
+     */
     public static ByteArrayInputStream scaleCenterCrop(byte[] source, int w, int h) {
         Bitmap decodeStream = BitmapFactory.decodeStream(new ByteArrayInputStream(source));
 
@@ -79,6 +116,15 @@ public class MagicHelper {
 
     }
 
+    /**
+     * 缩放并居中裁剪图像（Bitmap版本）。
+     *
+     * @param source 源Bitmap
+     * @param newHeight 目标高度
+     * @param newWidth 目标宽度
+     * @param withEffect 是否应用书籍效果
+     * @return 处理后的Bitmap
+     */
     public static Bitmap scaleCenterCrop(Bitmap source, int newHeight, int newWidth, boolean withEffect) {
         int sourceWidth = source.getWidth();
         int sourceHeight = source.getHeight();
@@ -135,6 +181,11 @@ public class MagicHelper {
         return dest;
     }
 
+    /**
+     * 应用书籍封面效果。
+     *
+     * @param dest 目标Bitmap
+     */
     public static void applyBookEffect(Bitmap dest) {
         if (AppState.get().isBookCoverEffect) {
             Canvas canvas = new Canvas(dest);
@@ -143,6 +194,11 @@ public class MagicHelper {
         }
     }
 
+    /**
+     * 应用带Logo的书籍封面效果。
+     *
+     * @param dest 目标Bitmap
+     */
     public static void applyBookEffectWithLogo(Bitmap dest) {
         try {
             Canvas canvas = new Canvas(dest);
@@ -153,6 +209,13 @@ public class MagicHelper {
         }
     }
 
+    /**
+     * 判断是否需要颜色魔术效果。
+     * <p>
+     * 检查日间/夜间模式下颜色是否与默认值不同。
+     *
+     * @return 是否需要魔术效果
+     */
     public static boolean isNeedMagic() {
 
         boolean isDay = AppState.get().isDayNotInvert && //
@@ -166,6 +229,11 @@ public class MagicHelper {
         return isDay || isNigth;
     }
 
+    /**
+     * 判断是否需要简单的颜色魔术效果（仅日间模式）。
+     *
+     * @return 是否需要魔术效果
+     */
     public static boolean isNeedMagicSimple() {
         boolean isDay = AppState.get().isDayNotInvert && //
                 (AppState.get().colorDayBg != AppState.COLOR_WHITE || //
@@ -173,27 +241,59 @@ public class MagicHelper {
         return isDay;
     }
 
+    /**
+     * 判断是否需要书籍背景图片。
+     *
+     * @return 是否需要背景图片
+     */
     public static boolean isNeedBookBackgroundImage() {
         return (!AppState.get().isDayNotInvert && AppState.get().isUseBGImageNight) || (AppState.get().isDayNotInvert && AppState.get().isUseBGImageDay);
     }
 
+    /**
+     * 获取当前模式的背景图片路径。
+     *
+     * @return 背景图片路径
+     */
     public static String getImagePath() {
         return !AppState.get().isDayNotInvert ? AppState.get().bgImageNightPath : AppState.get().bgImageDayPath;
     }
 
+    /**
+     * 获取指定模式的背景图片路径。
+     *
+     * @param isDay 是否日间模式
+     * @return 背景图片路径
+     */
     public static String getImagePath(boolean isDay) {
         return !isDay ? AppState.get().bgImageNightPath : AppState.get().bgImageDayPath;
     }
 
+    /**
+     * 获取当前模式的背景透明度。
+     *
+     * @return 透明度值
+     */
     public static int getTransparencyInt() {
         return AppState.get().isDayNotInvert ? AppState.get().bgImageDayTransparency :
                 AppState.get().bgImageNightTransparency;
     }
 
+    /** 默认背景图片1 */
     public static final String IMAGE_BG_1 = "bg/bg1.jpg";
+    /** 默认背景图片2 */
     public static final String IMAGE_BG_2 = "bg/bg2.jpg";
+    /** 默认背景图片3 */
     public static final String IMAGE_BG_3 = "bg/bg3.jpg";
 
+    /**
+     * 更新TextView的背景。
+     *
+     * @param textView TextView
+     * @param transparency 透明度
+     * @param path 背景图片路径
+     * @return 更新后的Bitmap
+     */
     public static Bitmap updateTextViewBG(TextView textView, int transparency, String path) {
         textView.setDrawingCacheEnabled(true);
         textView.buildDrawingCache(true);
@@ -215,12 +315,25 @@ public class MagicHelper {
 
     }
 
+    /**
+     * 获取背景图片Drawable。
+     *
+     * @param name 图片名称
+     * @return Drawable对象
+     */
     public static Drawable getBgImageDrawable(String name) {
         final BitmapDrawable background = new BitmapDrawable(Resources.getSystem(), loadBitmap(name));
         background.setAlpha(AppState.get().bgImageDayTransparency);
         return background;
     }
 
+    /**
+     * 从Assets加载Bitmap。
+     *
+     * @param context 上下文
+     * @param filePath 文件路径
+     * @return Bitmap对象
+     */
     public static Bitmap getBitmapFromAsset(Context context, String filePath) {
         try {
             return BitmapFactory.decodeStream(context.getAssets()
@@ -231,6 +344,12 @@ public class MagicHelper {
         return null;
     }
 
+    /**
+     * 获取日间模式背景图片Drawable。
+     *
+     * @param withAlpa 是否使用透明度
+     * @return Drawable对象
+     */
     public static Drawable getBgImageDayDrawable(boolean withAlpa) {
         final Bitmap bitmap = updateWithBackground(loadBitmap(AppState.get().bgImageDayPath),
                 withAlpa ? AppState.get().bgImageDayTransparency : AppState.DAY_TRANSPARENCY, Color.WHITE);
@@ -240,6 +359,12 @@ public class MagicHelper {
         return new BitmapDrawable(Resources.getSystem(), bitmap);
     }
 
+    /**
+     * 获取夜间模式背景图片Drawable。
+     *
+     * @param withAlpa 是否使用透明度
+     * @return Drawable对象
+     */
     public static Drawable getBgImageNightDrawable(boolean withAlpa) {
         final Bitmap bitmap = updateWithBackground(loadBitmap(AppState.get().bgImageNightPath),
                 withAlpa ? AppState.get().bgImageNightTransparency : AppState.NIGHT_TRANSPARENCY, Color.BLACK);
@@ -249,10 +374,18 @@ public class MagicHelper {
         return new BitmapDrawable(Resources.getSystem(), bitmap);
     }
 
+    /** 背景图片缓存 */
     static Bitmap bg1;
+    /** 背景图片路径缓存 */
     static String bgPath = getImagePath();
+    /** 主颜色 */
     static int mainColor = Color.TRANSPARENT;
 
+    /**
+     * 获取背景图片（带缓存）。
+     *
+     * @return 背景图片Bitmap
+     */
     public static Bitmap getBackgroundImage() {
         if (bg1 != null && getImagePath().equals(bgPath)) {
             return bg1;
@@ -263,6 +396,14 @@ public class MagicHelper {
         return bg1;
     }
 
+    /**
+     * 加载Bitmap。
+     * <p>
+     * 支持从文件系统和Assets加载，大文件自动缩放。
+     *
+     * @param name 文件路径或Assets路径
+     * @return Bitmap对象
+     */
     public static Bitmap loadBitmap(String name) {
         LOG.d("loadBitmap", name);
         if (TxtUtils.isEmpty(name)) {
@@ -293,6 +434,12 @@ public class MagicHelper {
         }
     }
 
+    /**
+     * 解码并缩放Bitmap（大文件优化）。
+     *
+     * @param name 文件路径
+     * @return Bitmap对象
+     */
     public static Bitmap decodeScaledBitmap(String name) {
         File file = new File(name);
         long fileSizeInBytes = file.length();
@@ -317,6 +464,13 @@ public class MagicHelper {
         return BitmapFactory.decodeFile(name, opt);
     }
 
+    /**
+     * 计算采样大小。
+     *
+     * @param fileSize 文件大小
+     * @param limit 限制大小
+     * @return 采样大小
+     */
     private static int calculateInSampleSize(long fileSize, long limit) {
         int inSampleSize = 1;
         if (fileSize > limit) {
@@ -329,10 +483,24 @@ public class MagicHelper {
         return Integer.highestOneBit(inSampleSize);
     }
 
+    /**
+     * 使用当前配置更新背景。
+     *
+     * @param bitmap 源Bitmap
+     * @return 更新后的Bitmap
+     */
     public static Bitmap updateWithBackground(Bitmap bitmap) {
         return updateWithBackground(bitmap, getTransparencyInt(), getBackgroundImage());
     }
 
+    /**
+     * 使用指定背景图片更新Bitmap。
+     *
+     * @param bitmap 源Bitmap
+     * @param alpha 透明度
+     * @param bgBitmap 背景Bitmap
+     * @return 更新后的Bitmap
+     */
     public static Bitmap updateWithBackground(Bitmap bitmap, int alpha, Bitmap bgBitmap) {
         Paint p = new Paint();
         p.setAlpha(alpha);
@@ -353,6 +521,14 @@ public class MagicHelper {
         return result;
     }
 
+    /**
+     * 使用自定义背景更新Bitmap。
+     *
+     * @param bitmap 源Bitmap
+     * @param alpha 透明度
+     * @param bgBitmap 背景Bitmap
+     * @return 更新后的Bitmap
+     */
     public static Bitmap updateWithBackground_customBG(Bitmap bitmap, int alpha, Bitmap bgBitmap) {
         Paint p = new Paint();
         p.setAlpha(255 - alpha);
@@ -388,6 +564,14 @@ public class MagicHelper {
         return result;
     }
 
+    /**
+     * 使用指定颜色更新背景。
+     *
+     * @param bitmap 源Bitmap
+     * @param alpha 透明度
+     * @param color 背景颜色
+     * @return 更新后的Bitmap
+     */
     public static Bitmap updateWithBackground(Bitmap bitmap, int alpha, int color) {
         if (bitmap == null) {
             return null;
@@ -404,10 +588,20 @@ public class MagicHelper {
         return result;
     }
 
+    /**
+     * 获取当前模式的文本颜色。
+     *
+     * @return 文本颜色
+     */
     public static int getTextColor() {
         return AppState.get().isDayNotInvert ? AppState.get().colorDayText : AppState.get().colorNigthText;
     }
 
+    /**
+     * 获取当前模式的背景颜色。
+     *
+     * @return 背景颜色
+     */
     public static int getBgColor() {
         if (AppState.get().isDayNotInvert && AppState.get().isUseBGImageDay) {
             // return Color.parseColor("#EFEBDE");
@@ -419,10 +613,21 @@ public class MagicHelper {
         return AppState.get().isDayNotInvert ? AppState.get().colorDayBg : AppState.get().colorNigthBg;
     }
 
+    /**
+     * 获取当前模式的前景颜色。
+     *
+     * @return 前景颜色
+     */
     public static int getForegroundColor() {
         return AppState.get().isDayNotInvert ? AppState.get().colorDayForeground : AppState.get().colorNigthForeground;
     }
 
+    /**
+     * 获取颜色的HSV值。
+     *
+     * @param color 颜色值
+     * @return HSV数组
+     */
     public static float[] getHSV(int color) {
         float[] hsv = new float[3];
         Color.colorToHSV(color, hsv);
@@ -434,6 +639,13 @@ public class MagicHelper {
 //  return Color.argb(alpha,color.red(),color.green(),color.blue());
 //  }
 
+    /**
+     * 设置颜色的透明度。
+     *
+     * @param alpha 透明度
+     * @param colorInt 颜色值
+     * @return 设置透明度后的颜色
+     */
     public static int alpha(int alpha, int colorInt) {
         int red = (colorInt >> 16) & 0xFF;
         int green = (colorInt >> 8) & 0xFF;
@@ -441,6 +653,12 @@ public class MagicHelper {
         return android.graphics.Color.argb(alpha, red, green, blue);
     }
 
+    /**
+     * 计算颜色亮度。
+     *
+     * @param color 颜色值
+     * @return 亮度值
+     */
     private static float lightness(int color) {
         int R = Color.red(color);
         int G = Color.green(color);
@@ -449,9 +667,17 @@ public class MagicHelper {
         return (float) (0.2126 * R + 0.7152 * G + 0.0722 * B);
     }
 
+    /** 颜色缓存输入 */
     static int colorCacheInput = Color.TRANSPARENT;
+    /** 颜色缓存输出 */
     static int colorCache = Color.TRANSPARENT;
 
+    /**
+     * 获取更亮的颜色（带缓存）。
+     *
+     * @param color 原始颜色
+     * @return 变亮后的颜色
+     */
     public static int ligtherColor(int color) {
         if (color == colorCacheInput) {
             return colorCache;
@@ -474,18 +700,28 @@ public class MagicHelper {
 
     }
 
+    /** 魔术颜色 */
     public static final int myColorIng = Color.BLUE;
 
+    /** 魔术颜色R分量 */
     public static final int addR = Color.red(myColorIng);
+    /** 魔术颜色G分量 */
     public static final int addG = Color.green(myColorIng);
+    /** 魔术颜色B分量 */
     public static final int addB = Color.blue(myColorIng);
 
+    /** 魔术颜色HSL值 */
     public static float[] myColorHSL = new float[3];
 
     static {
         ColorUtils.colorToHSL(myColorIng, myColorHSL);
     }
 
+    /**
+     * 更新Bitmap的颜色魔术效果。
+     *
+     * @param bitmap Bitmap
+     */
     public void udpateColorsMagic(Bitmap bitmap) {
         if (!isNeedMagic()) {
             return;
@@ -496,6 +732,14 @@ public class MagicHelper {
         bitmap.setPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
     }
 
+    /**
+     * 将指定颜色替换为目标颜色。
+     *
+     * @param from 源颜色
+     * @param to 目标颜色
+     * @param allpixels 像素数组
+     * @return 更新后的像素数组
+     */
     public static int[] updatePixelsFromTo(int from, int to, int[] allpixels) {
         for (int i = 0; i < allpixels.length; i++) {
             if (allpixels[i] == from) {
@@ -506,6 +750,11 @@ public class MagicHelper {
         return allpixels;
     }
 
+    /**
+     * 获取文本或图标颜色。
+     *
+     * @return 文本/图标颜色
+     */
     public static int getTextOrIconColor() {
         int textColor = AppState.get().isUiTextColor ? AppState.get().uiTextColor : Color.WHITE;
 
@@ -518,16 +767,32 @@ public class MagicHelper {
         return textColor;
     }
 
+    /**
+     * 判断颜色是否为亮色。
+     *
+     * @param color 颜色值
+     * @return 是否为亮色
+     */
     public static boolean isLight(int color) {
         return color >= 200 && color <= 255;
     }
 
+    /**
+     * 判断颜色是否为暗色。
+     *
+     * @param color 颜色值
+     * @return 是否为暗色
+     */
     public static boolean isDark(int color) {
         return color >= 0 && color <= 55;
     }
 
+    /**
+     * 更新颜色魔术效果（实验性，已废弃）。
+     *
+     * @param allpixels 像素数组
+     */
     @Deprecated
-    // experimanttal
     public static void udpateColorsMagic1(int[] allpixels) {
         if (!isNeedMagic()) {
             return;
@@ -567,6 +832,11 @@ public class MagicHelper {
 
     }
 
+    /**
+     * 更新颜色魔术效果（简单版本）。
+     *
+     * @param allpixels 像素数组
+     */
     public static void udpateColorsMagicSimple(int[] allpixels) {
         int bgColor = MagicHelper.getBgColor();
         int first = allpixels[0];
@@ -587,6 +857,13 @@ public class MagicHelper {
         }
     }
 
+    /**
+     * 更新颜色魔术效果（标准版本）。
+     * <p>
+     * 根据当前主题颜色配置，将黑白像素转换为主题色。
+     *
+     * @param allpixels 像素数组
+     */
     public static void udpateColorsMagic(int[] allpixels) {
         if (!isNeedMagic()) {
             return;
@@ -623,6 +900,13 @@ public class MagicHelper {
         }
     }
 
+    /**
+     * 混合背景颜色。
+     *
+     * @param col1 颜色1
+     * @param col2 颜色2
+     * @return 混合后的颜色
+     */
     public static int mixColorsBg(int col1, int col2) {
         int r1, g1, b1, r2, g2, b2;
 
@@ -641,6 +925,13 @@ public class MagicHelper {
         return Color.rgb(r3, g3, b3);
     }
 
+    /**
+     * 混合字体颜色。
+     *
+     * @param col1 颜色1
+     * @param col2 颜色2
+     * @return 混合后的颜色
+     */
     public static int mixColorsFontColor(int col1, int col2) {
         int r1, g1, b1, r2, g2, b2;
 
@@ -659,18 +950,47 @@ public class MagicHelper {
         return Color.rgb(r3, g3, b3);
     }
 
+    /**
+     * 颜色乘法混合。
+     *
+     * @param r1 值1
+     * @param r2 值2
+     * @return 混合结果
+     */
     public static int multiply(int r1, int r2) {
         return r1 * r2 / 255;
     }
 
+    /**
+     * 颜色屏幕混合。
+     *
+     * @param c1 颜色1
+     * @param c2 颜色2
+     * @return 混合结果
+     */
     public static int screen(int c1, int c2) {
         return 255 - (((255 - c1) * (255 - c2)) / 255);
     }
 
+    /**
+     * 颜色叠加混合。
+     *
+     * @param c1 颜色1
+     * @param c2 颜色2
+     * @return 混合结果
+     */
     public static int overlay(int c1, int c2) {
         return (c1 < 128) ? (2 * c2 * c1 / 255) : (255 - 2 * (255 - c2) * (255 - c1) / 255);
     }
 
+    /**
+     * 混合两种颜色。
+     *
+     * @param color1 颜色1
+     * @param color2 颜色2
+     * @param ratio 混合比例
+     * @return 混合后的颜色
+     */
     private static int blendColors(int color1, int color2, float ratio) {
         final float inverseRation = 1f - ratio;
         float r = (Color.red(color1) * ratio) + (Color.red(color2) * inverseRation);
@@ -679,6 +999,14 @@ public class MagicHelper {
         return Color.rgb((int) r, (int) g, (int) b);
     }
 
+    /**
+     * 混合两种颜色（带透明度支持）。
+     *
+     * @param color1 颜色1
+     * @param color2 颜色2
+     * @param amount 混合比例
+     * @return 混合后的颜色
+     */
     public static int mixTwoColors(int color1, int color2, float amount) {
         final byte ALPHA_CHANNEL = 24;
         final byte RED_CHANNEL = 16;
@@ -698,10 +1026,22 @@ public class MagicHelper {
         return a << ALPHA_CHANNEL | r << RED_CHANNEL | g << GREEN_CHANNEL | b << BLUE_CHANNEL;
     }
 
+    /**
+     * 将颜色转换为十六进制字符串。
+     *
+     * @param intColor 颜色值
+     * @return 十六进制颜色字符串
+     */
     public static String colorToString(int intColor) {
         return String.format("#%06X", (0xFFFFFF & intColor));
     }
 
+    /**
+     * 获取Bitmap的主色调。
+     *
+     * @param bitmap Bitmap
+     * @return 主色调颜色值
+     */
     public static int getDominantColor(Bitmap bitmap) {
         if (null == bitmap) return Color.TRANSPARENT;
 
@@ -725,6 +1065,12 @@ public class MagicHelper {
         return Color.rgb(redBucket / pixelCount, greenBucket / pixelCount, blueBucket / pixelCount);
     }
 
+    /**
+     * 裁剪Bitmap的空白区域。
+     *
+     * @param bmp Bitmap
+     * @return 裁剪后的Bitmap
+     */
     public static Bitmap trimBitmap(Bitmap bmp) {
         int bgColor = getBgColor();
         int imgHeight = bmp.getHeight();
@@ -786,6 +1132,12 @@ public class MagicHelper {
 
     }
 
+    /**
+     * 判断颜色是否为暗色（简单版本）。
+     *
+     * @param color 颜色值
+     * @return 是否为暗色
+     */
     public static boolean isColorDarkSimple(int color) {
         int k = Color.red(color) + Color.green(color) + Color.blue(color);
         if (k > 550) {// 550
@@ -795,6 +1147,12 @@ public class MagicHelper {
         }
     }
 
+    /**
+     * 判断颜色是否为暗色（标准版本）。
+     *
+     * @param color 颜色值
+     * @return 是否为暗色
+     */
     public static boolean isColorDark(int color) {
         double darkness = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255;
         if (darkness < 0.5) {
@@ -804,6 +1162,13 @@ public class MagicHelper {
         }
     }
 
+    /**
+     * 应用快速对比度和亮度调整。
+     *
+     * @param arr 像素数组
+     * @param w 宽度
+     * @param h 高度
+     */
     public static void applyQuickContrastAndBrightness(int[] arr, int w, int h) {
         if (AppState.get().isEnableBCOptional1) {
             if (AppState.get().contrastImage != 0 || AppState.get().brigtnessImage != 0) {
@@ -816,6 +1181,11 @@ public class MagicHelper {
 
     }
 
+    /**
+     * 加粗文本（Ivan算法）。
+     *
+     * @param arr 像素数组
+     */
     public static void ivanEbolden(int[] arr) {
         int prevSum = 0;
         for (int i = 0; i < arr.length; i++) {
@@ -846,6 +1216,13 @@ public class MagicHelper {
 
     }
 
+    /**
+     * 调整对比度和亮度（Ivan算法）。
+     *
+     * @param arr 像素数组
+     * @param extra_contrast 额外对比度
+     * @param delta_brightness 亮度增量
+     */
     public static void ivanContrast(int[] arr, int extra_contrast, int delta_brightness) {
         int prevSum = 0;
         for (int i = 0; i < arr.length; i++) {
@@ -895,10 +1272,19 @@ public class MagicHelper {
 
     }
 
+    /** 亮度对比度映射表 */
     static int[] brightnessContrastMap = new int[256];
 
+    /** 最后哈希值 */
     static int lastHash = -1;
 
+    /**
+     * 快速对比度调整（带缓存）。
+     *
+     * @param arr 像素数组
+     * @param extra_contrast 额外对比度
+     * @param delta_brightness 亮度增量
+     */
     public static void quickContrast3(int[] arr, int extra_contrast, int delta_brightness) {
 
         int hash = extra_contrast * 31 + delta_brightness;
@@ -947,8 +1333,14 @@ public class MagicHelper {
 
     }
 
+    /** 锐化映射表 */
     static int[] sharpenMap = null;
 
+    /**
+     * 加粗文本（锐化算法）。
+     *
+     * @param arr 像素数组
+     */
     public static void embolden(int[] arr) {
 
         int lum;
@@ -976,6 +1368,14 @@ public class MagicHelper {
 
     }
 
+    /**
+     * 快速模糊算法。
+     *
+     * @param pix 像素数组
+     * @param w 宽度
+     * @param h 高度
+     * @param radius 模糊半径
+     */
     public static void fastblur(int[] pix, int w, int h, int radius) {
         int wm = w - 1;
         int hm = h - 1;
@@ -1162,6 +1562,11 @@ public class MagicHelper {
 
     }
 
+    /**
+     * 获取色调颜色。
+     *
+     * @return 色调颜色
+     */
     public static int getTintColor() {
         int colorTint = 0;
         if (AppState.get().isUiTextColor) {

@@ -26,12 +26,28 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+/**
+ * TXT文件提取与HTML转换工具类。
+ * <p>
+ * 负责将TXT文件内容转换为HTML格式，支持编码检测、文本替换、连字符处理等功能。
+ * 提供缓存机制以避免重复转换，提高大文件处理性能。
+ */
 public class TxtExtract {
 
+    /** 输出HTML文件的后缀名 */
     public static final String OUT_FB2_XML = "txt.html";
 
+    /** 句子结束字符数组，用于判断标题行 */
     static char[] endChars = new char[]{'.', '!', '?', ';'};
 
+    /**
+     * 格式化加粗下划线文本。
+     * <p>
+     * 如果行以"(*)"开头且以句子结束符结尾，则添加加粗和下划线标签。
+     *
+     * @param line 输入文本行
+     * @return 格式化后的文本行
+     */
     public static String foramtUB(String line) {
         if (line != null && line.trim()
                                 .startsWith("(*)") && TxtUtils.isLastCharEq(line, endChars)) {
@@ -40,10 +56,32 @@ public class TxtExtract {
         return line;
     }
 
+    /**
+     * 提取TXT文件内容（别名方法）。
+     *
+     * @param inputPath 输入文件路径
+     * @param outputDir 输出目录路径
+     * @return 生成的HTML文件路径
+     * @throws IOException IO异常
+     */
     public static String extract1(String inputPath, String outputDir) throws IOException {
         return extract(inputPath, outputDir);
     }
 
+    /**
+     * 提取TXT文件内容并转换为HTML格式。
+     * <p>
+     * 核心处理流程：
+     * 1. 检查缓存文件是否存在，存在则直接返回
+     * 2. 检测文件编码（自动或使用用户指定）
+     * 3. 逐行读取并处理文本
+     * 4. 生成HTML文件并缓存
+     *
+     * @param inputPath 输入文件路径
+     * @param outputDir 输出目录路径
+     * @return 生成的HTML文件路径
+     * @throws IOException IO异常
+     */
     public static String extract(String inputPath, String outputDir) throws IOException {
         File inputFile = new File(inputPath);
         long inputLastModified = inputFile.lastModified();
@@ -135,6 +173,16 @@ public class TxtExtract {
         return cacheFile.getPath();
     }
     
+    /**
+     * 处理单行文本，转换为HTML格式。
+     * <p>
+     * 根据用户设置（预格式化、换行处理等）进行不同的转换逻辑。
+     *
+     * @param line         输入文本行
+     * @param replacements 文本替换规则列表
+     * @param isJSON       是否为JSON文件
+     * @return 转换后的HTML字符串
+     */
     private static String processLine(String line, List<SimpleMeta> replacements, boolean isJSON) {
         String outLn = null;
 
@@ -175,6 +223,16 @@ public class TxtExtract {
         return outLn;
     }
 
+    /**
+     * 快速处理单行文本，直接追加到批量缓冲区。
+     * <p>
+     * 优化版本，避免创建中间字符串对象，提高处理性能。
+     *
+     * @param line         输入文本行
+     * @param replacements 文本替换规则列表
+     * @param isJSON       是否为JSON文件
+     * @param batch        批量输出缓冲区
+     */
     private static void processLineFast(String line, List<SimpleMeta> replacements, boolean isJSON, StringBuilder batch) {
         if (AppState.get().isPreText) {
             String outLn = retab(line, 8);
@@ -208,6 +266,17 @@ public class TxtExtract {
         }
     }
 
+    /**
+     * 快速格式化文本行，直接追加到批量缓冲区。
+     * <p>
+     * 包含HTML转义、连字符处理、文本替换等操作。
+     *
+     * @param line       输入文本行
+     * @param replacements 文本替换规则列表
+     * @param isJSON     是否为JSON文件
+     * @param batch      批量输出缓冲区
+     * @param withClose  是否需要添加闭合标签
+     */
     private static void formatFast(String line, List<SimpleMeta> replacements, boolean isJSON, StringBuilder batch, boolean withClose) {
         line = line.replace("\n", "").replace("\r", "");
         line = TextUtils.htmlEncode(line);
@@ -238,6 +307,15 @@ public class TxtExtract {
         }
     }
 
+    /**
+     * 将制表符转换为空格。
+     * <p>
+     * 根据指定的制表位宽度，将文本中的制表符替换为相应数量的空格。
+     *
+     * @param text    输入文本
+     * @param tabstop 制表位宽度
+     * @return 转换后的文本
+     */
     public static String retab(final String text, final int tabstop) {
         final char[] input = text.toCharArray();
         final StringBuilder sb = new StringBuilder(input.length + 8);
@@ -259,6 +337,15 @@ public class TxtExtract {
         return sb.toString();
     }
 
+    /**
+     * 格式化文本行。
+     * <p>
+     * 包含换行符移除、HTML转义、连字符处理、文本替换等操作。
+     *
+     * @param line         输入文本行
+     * @param replacements 文本替换规则列表
+     * @return 格式化后的文本
+     */
     public static String format(String line, List<SimpleMeta> replacements) {
         line = line.replace("\n", "").replace("\r", "");
         line = TextUtils.htmlEncode(line);
