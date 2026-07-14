@@ -254,23 +254,23 @@ public class ShareDialog {
         // true;
         final boolean isMainTabs = a instanceof MainTabs2;
 
-        List<String> items = new ArrayList<String>();
+        List<Pair<String, String>> items = new ArrayList<Pair<String, String>>();
 
         final boolean isTxt = BookType.TXT.is(file.getPath());
         if (isTxt) {
-            items.add(a.getString(R.string.edit));
+            items.add(new Pair<String, String>("✎", a.getString(R.string.edit)));
         }
 
         if (isLibrary) {
-            items.add(a.getString(R.string.library));
+            items.add(new Pair<String, String>("📚", a.getString(R.string.library)));
         }
 
         if (dc != null) {
             if (a instanceof VerticalViewActivity || dc.isMusicianMode()) {
-                items.add("② "+AppState.get().nameHorizontalMode);
+                items.add(new Pair<String, String>("②", AppState.get().nameHorizontalMode));
             }
             if (a instanceof HorizontalViewActivity || dc.isMusicianMode()) {
-                items.add("① "+AppState.get().nameVerticalMode);
+                items.add(new Pair<String, String>("①", AppState.get().nameVerticalMode));
             }
 
             if (dc.isMusicianMode() == false) {
@@ -280,7 +280,7 @@ public class ShareDialog {
 
         if (isPDF) {
            // items.add(a.getString(R.string.make_text_reflow));
-            items.add(iconText(a, "⌘", R.string.make_text_reflow));
+            items.add(new Pair<String, String>("⌘", a.getString(R.string.make_text_reflow)));
         }
 
         if (dc != null) {
@@ -291,7 +291,7 @@ public class ShareDialog {
         //items.add(a.getString(R.string.open_with));
         //items.add(a.getString(R.string.send_file));
 
-        items.add(iconText(a, "⎘", R.string.open_with));
+        items.add(new Pair<String, String>("⎘", a.getString(R.string.open_with)));
         // items.add(iconText(a, "➥", R.string.send_file)); // Hide send file
 
         final boolean isExternalOrCloud = ExtUtils.isExteralSD(file.getPath()) || Clouds.isCloud(file.getPath());
@@ -313,25 +313,25 @@ public class ShareDialog {
         if (isMainTabs) {
             if (canDelete) {
                 //items.add(a.getString(R.string.delete));
-                items.add(iconText(a, "⊗", R.string.delete));
+                items.add(new Pair<String, String>("⊗", a.getString(R.string.delete)));
             }
             if (canCopy) {
                 //items.add(a.getString(R.string.copy));
-                items.add(iconText(a, "⧉", R.string.copy));
+                items.add(new Pair<String, String>("⧉", a.getString(R.string.copy)));
             }
             if (!isRemovedFromLibrary) {
-                items.add(iconText(a,"-",R.string.remove_from_library));
+                items.add(new Pair<String, String>("-", a.getString(R.string.remove_from_library)));
             } else {
-                items.add(iconText(a,"+",R.string.add_to_library));
+                items.add(new Pair<String, String>("+", a.getString(R.string.add_to_library)));
             }
         }
 
         if (!isExternalOrCloud) {
-            items.add(iconText(a, "#", R.string.add_tags));
+            items.add(new Pair<String, String>("#", a.getString(R.string.add_tags)));
         }
 
         if (AppsConfig.isCloudsEnable) {
-            items.add(a.getString(R.string.upload_to_cloud));
+            items.add(new Pair<String, String>("☁", a.getString(R.string.upload_to_cloud)));
         }
         final boolean isPlaylist = file.getName()
                                        .endsWith(Playlists.L_PLAYLIST);
@@ -342,21 +342,30 @@ public class ShareDialog {
         final boolean isSyncronized = AppsConfig.IS_FDROID || Clouds.isLibreraSyncFile(file);
         if (!isSyncronized) {
             //items.add(a.getString(R.string.sync_book));
-            items.add(iconText(a, "↻", R.string.sync_book));
+            items.add(new Pair<String, String>("↻", a.getString(R.string.sync_book)));
         }
 
         if (isMainTabs) {
             //items.add(a.getString(R.string.delete_reading_progress));
-            items.add(iconText(a, "↶", R.string.delete_reading_progress));
+            items.add(new Pair<String, String>("↶", a.getString(R.string.delete_reading_progress)));
 
         }
 
         if (isShowInfo) {
-            items.add(iconText(a, "ⓘ", R.string.file_info));
+            items.add(new Pair<String, String>("ⓘ", a.getString(R.string.file_info)));
         }
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(a);
-        builder.setItems(items.toArray(new String[items.size()]), new DialogInterface.OnClickListener() {
+        builder.setAdapter(new BaseItemLayoutAdapter<Pair<String, String>>(a, R.layout.dialog_menu_item, items) {
+            @Override public void populateView(View layout, int position, Pair<String, String> item) {
+                TextView iconView = (TextView) layout.findViewById(R.id.iconView);
+                TextView textView = (TextView) layout.findViewById(R.id.textView);
+                iconView.setText(item.first);
+                textView.setText(item.second);
+                iconView.setTextColor(AppState.get().isDayNotInvert ? Color.BLACK : Color.WHITE);
+                textView.setTextColor(AppState.get().isDayNotInvert ? Color.BLACK : Color.WHITE);
+            }
+        }, new DialogInterface.OnClickListener() {
             @Override public void onClick(final DialogInterface dialog, final int which) {
                 int i = 0;
 

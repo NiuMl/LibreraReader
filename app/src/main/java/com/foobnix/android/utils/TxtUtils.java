@@ -94,6 +94,10 @@ public class TxtUtils {
         return icon + " " + c.getText(textID);
     }
 
+    public static String iconText(Context c, String icon, String text){
+        return icon + " " + text;
+    }
+
     public static String formatInt(Integer in) {
         if (in == null) {
             return "0";
