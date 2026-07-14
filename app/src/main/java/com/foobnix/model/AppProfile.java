@@ -41,42 +41,78 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * 应用配置文件管理类
+ * <p>
+ * 管理应用的配置文件路径、同步文件夹结构、配置文件名称常量等。
+ * 提供配置文件的创建、读取、保存、同步等功能，支持多设备配置同步。
+ */
 public class AppProfile {
 
+    /** 配置文件前缀 */
     public static final String PROFILE_PREFIX = "profile.";
+    /** 设备配置文件前缀 */
     public static final String DEVICE_PREFIX = "device.";
-    public static File DOWNLOADS_DIR =
-            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+    /** 系统下载目录 */
+    public static File DOWNLOADS_DIR = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+    /** 当前设备型号标识 */
     public static final String DEVICE_MODEL = DEVICE_PREFIX + Build.MODEL.replace(" ", "_");
+    /** 应用状态配置文件名 */
     public static final String APP_STATE_JSON = "app-State.json";
+    /** CSS样式配置文件名 */
     public static final String APP_CSS_JSON = "app-CSS.json";
+    /** 最近阅读配置文件名 */
     public static final String APP_RECENT_JSON = "app-Recent.json";
+    /** 排除目录配置文件名 */
     public static final String APP_EXCLUDE_JSON = "app-Exclude.json";
+    /** 收藏配置文件名 */
     public static final String APP_FAVORITE_JSON = "app-Favorite.json";
+    /** 书签配置文件名 */
     public static final String APP_BOOKMARKS_JSON = "app-Bookmarks.json";
+    /** 阅读进度配置文件名 */
     public static final String APP_PROGRESS_JSON = "app-Progress.json";
+    /** 标签配置文件名 */
     public static final String APP_TAGS_JSON = "app-Tags.json";
+    /** 标签配置文件名（新版） */
     public static final String APP_TAGS_JSON2 = "app-Tags2.json";
 
+    /** 网页词典配置文件名 */
     public static final String APP_WEB_DICT = "app-WebDict.json";
+    /** 网页搜索配置文件名 */
     public static final String APP_WEB_SEARCH = "app-WebSearch.json";
+    /** 文本替换配置文件名 */
     public static final String APP_TEXT_REPLACEMENT = "app-TextReplacement.json";
 
+    /** 同步文件夹根目录键名 */
     public static final String SYNC_FOLDER_ROOT_KEY = "syncFolderRoot";
+    /** 配置文件SharedPreferences名称 */
     public static final String APP_PROFILE_SP = "AppProfile";
 
+    /** 同步文件夹根目录 */
     public static File SYNC_FOLDER_ROOT;
+    /** 书籍同步文件夹 */
     public static File SYNC_FOLDER_BOOKS;
+    /** 词典同步文件夹 */
     public static File SYNC_FOLDER_DICT;
+    /** 配置文件同步文件夹 */
     public static File SYNC_FOLDER_PROFILE;
+    /** 设备配置同步文件夹 */
     public static File SYNC_FOLDER_DEVICE_PROFILE;
+    /** 最近阅读同步文件 */
     public static File syncRecent;
+    /** 收藏同步文件 */
     public static File syncFavorite;
+    /** 排除目录同步文件 */
     public static File syncExclude;
+    /** 状态同步文件 */
     public static File syncState;
+    /** 标签同步文件 */
     public static File syncTags;
+    /** 标签同步文件（新版） */
     public static File syncTags2;
+    /** CSS样式同步文件 */
     public static File syncCSS;
+    /** 播放列表同步文件 */
     public static File syncPlaylist;
     public static File syncProgress;
     public static File syncBookmarks;

@@ -40,15 +40,33 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * TTS桌面小部件
+ * <p>
+ * 提供TTS语音朗读控制的桌面小部件，显示当前朗读书籍封面、书名和播放控制按钮（播放/暂停、上一曲、下一曲）。
+ * 点击封面可打开应用的最近阅读页面。
+ */
 public class TTSWidget extends AppWidgetProvider {
 
-
+    /** 书籍名称文本 */
     String textUpdate;
+    /** 书籍路径 */
     String bookPath;
 
+    /** 是否正在加载中（防止并发更新） */
     private volatile boolean isLoading = false;
+    /** 主线程Handler */
     Handler handler = new Handler(Looper.getMainLooper());
 
+    /**
+     * 更新小部件
+     * <p>
+     * 在后台线程中执行更新操作，避免阻塞UI线程。使用isLoading标志防止并发更新。
+     *
+     * @param context          上下文
+     * @param appWidgetManager 小部件管理器
+     * @param appWidgetIds     小部件ID数组
+     */
     @Override
     public synchronized void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         if (isLoading) {
@@ -58,6 +76,15 @@ public class TTSWidget extends AppWidgetProvider {
         AppsConfig.executorService.execute(() -> onUpdateAsync(context, appWidgetManager, appWidgetIds));
     }
 
+    /**
+     * 异步更新小部件
+     * <p>
+     * 获取最近阅读书籍信息，加载封面图片，构建RemoteViews并更新小部件。
+     *
+     * @param context          上下文
+     * @param appWidgetManager 小部件管理器
+     * @param appWidgetIds     小部件ID数组
+     */
     public synchronized void onUpdateAsync(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         LOG.d("TTSWidget", "onUpdate1", bookPath);
         isLoading = true;
@@ -70,20 +97,15 @@ public class TTSWidget extends AppWidgetProvider {
                     FileMeta fileMeta = list.get(0);
                     textUpdate = TxtUtils.getFileMetaBookName(fileMeta);
                     bookPath = fileMeta.getPath();
-
                 }
             }
 
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-
-
                     textUpdate = TxtUtils.nullToEmpty(textUpdate);
 
                     if (TxtUtils.isNotEmpty(bookPath)) {
-                        //String url = IMG.getCoverUrl(bookPath);
-
                         IMG.getCoverPageWithEffect(context,bookPath,null).into(new CustomTarget<Bitmap>() {
                             @Override
                             public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
@@ -98,26 +120,21 @@ public class TTSWidget extends AppWidgetProvider {
                                     views.setViewVisibility(R.id.ttsPrevTrack, View.GONE);
                                     views.setViewVisibility(R.id.ttsNextTrack, View.GONE);
                                     views.setViewVisibility(R.id.ttsStop, View.GONE);
-                                    //views.setViewVisibility(R.id.ttsPrev, View.GONE);
 
                                     PendingIntent next = PendingIntent.getService(context, 0, new Intent(TTSNotification.TTS_NEXT, null, context, TTSService.class), PendingIntent.FLAG_IMMUTABLE);
                                     PendingIntent prev = PendingIntent.getService(context, 0, new Intent(TTSNotification.TTS_PREV, null, context, TTSService.class), PendingIntent.FLAG_IMMUTABLE);
                                     PendingIntent playPause = PendingIntent.getService(context, 0, new Intent(TTSNotification.TTS_PLAY_PAUSE, null, context, TTSService.class), PendingIntent.FLAG_IMMUTABLE);
 
-
                                     views.setOnClickPendingIntent(R.id.ttsPlay, playPause);
                                     views.setOnClickPendingIntent(R.id.ttsPrev, prev);
                                     views.setOnClickPendingIntent(R.id.ttsNext, next);
                                     views.setTextViewText(R.id.bookInfo, "" + textUpdate);
-                                    //views.setViewLayoutMargin(R.id.ttsPrev,RemoteViews.MARGIN_LEFT,0.0f,0);
-
 
                                     if (TTSEngine.get().isPlaying()) {
                                         views.setImageViewResource(R.id.ttsPlay, R.drawable.glyphicons_174_pause);
                                     } else {
                                         views.setImageViewResource(R.id.ttsPlay, R.drawable.glyphicons_175_play);
                                     }
-
 
                                     int tab = UITab.getCurrentTabIndex(UITab.RecentFragment);
                                     Intent mainTabs = new Intent(context, MainTabs2.class);
@@ -126,9 +143,7 @@ public class TTSWidget extends AppWidgetProvider {
                                     PendingIntent mainTabsIntent = PendingIntent.getActivity(context, 0, mainTabs, PendingIntent.FLAG_IMMUTABLE);
                                     views.setOnClickPendingIntent(R.id.ttsIcon, mainTabsIntent);
 
-
                                     final int color = AppState.get().isUiTextColor ? AppState.get().uiTextColor : AppState.get().tintColor;
-
 
                                     views.setInt(R.id.ttsPlay, "setColorFilter", color);
                                     views.setInt(R.id.ttsNext, "setColorFilter", color);
@@ -144,17 +159,22 @@ public class TTSWidget extends AppWidgetProvider {
                             }
                         });
                     }
-
                 }
             });
 
         } finally {
             isLoading = false;
         }
-
-
     }
 
+    /**
+     * 接收广播消息
+     * <p>
+     * 处理APPWIDGET_UPDATE广播，提取书籍信息并触发更新。
+     *
+     * @param context 上下文
+     * @param intent  意图
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals("android.appwidget.action.APPWIDGET_UPDATE")) {
@@ -168,7 +188,6 @@ public class TTSWidget extends AppWidgetProvider {
             }
             int[] appWidgetIds = AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, TTSWidget.class));
             onUpdate(context, AppWidgetManager.getInstance(context), appWidgetIds);
-
         }
         super.onReceive(context, intent);
     }

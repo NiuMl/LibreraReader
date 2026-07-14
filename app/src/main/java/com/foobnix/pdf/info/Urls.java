@@ -22,8 +22,22 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Locale;
 
+/**
+ * URL操作工具类
+ * <p>
+ * 提供URL编码、打开浏览器、在对话框中显示网页等功能。
+ * 支持RTL语言检测和文本方向判断。
+ */
 public class Urls {
 
+    /**
+     * URL编码
+     * <p>
+     * 使用UTF-8编码字符串，处理编码异常时使用系统默认编码。
+     *
+     * @param string 待编码字符串
+     * @return 编码后的字符串
+     */
     public static String encode(String string) {
         try {
             return URLEncoder.encode(string, "UTF-8");
@@ -33,8 +47,15 @@ public class Urls {
         }
     }
 
+    /**
+     * 打开URL
+     * <p>
+     * 通过系统浏览器打开指定URL，将file://协议转换为https://协议。
+     *
+     * @param a   上下文
+     * @param url 要打开的URL
+     */
     public static void open(final Context a, String url) {
-
         if (a == null || url == null) {
             return;
         }
@@ -49,6 +70,16 @@ public class Urls {
         }
     }
 
+    /**
+     * 在对话框中打开网页
+     * <p>
+     * 创建一个包含WebView的对话框，在应用内显示网页内容。
+     * 支持关闭回调和自定义User-Agent。
+     *
+     * @param a        上下文
+     * @param url      网页地址
+     * @param onClose  关闭对话框后的回调
+     */
     public static void openWevView(final Context a, String url, final Runnable onClose) {
         LOG.d(">>> open WevView", url);
 
@@ -70,14 +101,13 @@ public class Urls {
                 view.loadUrl(url);
                 return true;
             }
-
         });
 
         wrapper.setOrientation(LinearLayout.VERTICAL);
         wrapper.addView(wv, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         wrapper.addView(keyboardHack, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         alert.setView(wrapper);
-        alert.setNegativeButton(R.string.close, new DialogInterface.OnClickListener() {
+        alert.setNegativeButton(R.string.close, (dialog, id) -> dialog.dismiss());
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 dialog.dismiss();

@@ -67,12 +67,22 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 文档控制器抽象基类
+ * <p>
+ * 提供书籍阅读的核心控制功能，包括页面导航、缩放、书签管理、TTS朗读、屏幕方向控制等。
+ * 是阅读器页面的核心组件，负责协调所有阅读相关操作。
+ */
 public abstract class DocumentController {
 
+    /** 密码参数 */
     public static final String EXTRA_PASSWORD = "password";
+    /** 阅读进度百分比参数 */
     public static final String EXTRA_PERCENT = "p";
+    /** 播放列表参数 */
     public static final String EXTRA_PLAYLIST = "playlist";
 
+    /** 重复朗读时跳过的页数 */
     public static final int REPEAT_SKIP_AMOUNT = 15;
 
     public final static List<Integer> orientationIds = Arrays.asList(//

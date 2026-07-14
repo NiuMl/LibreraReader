@@ -29,53 +29,81 @@ import com.foobnix.ui2.FileMetaCore;
 
 import java.io.File;
 
+/**
+ * 警告对话框工具类
+ * <p>
+ * 提供各种常用对话框的创建方法，包括结果提示、URL打开确认、确认对话框、输入对话框等。
+ * 统一管理对话框的样式和行为，确保用户体验一致性。
+ */
 public class AlertDialogs {
 
+    /**
+     * 显示操作结果提示
+     *
+     * @param c      上下文
+     * @param result 操作结果（成功/失败）
+     */
     public static void showResultToasts(Context c, boolean result) {
         Toast.makeText(c, result ? R.string.success : R.string.fail, Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * 显示打开网页确认对话框
+     * <p>
+     * 用户确认后调用Urls打开指定URL。
+     *
+     * @param c   上下文
+     * @param url 网页地址
+     */
     public static void openUrl(final Activity c, String url) {
-
-        
         final AlertDialog.Builder builder = new AlertDialog.Builder(c);
         builder.setTitle(R.string.open_web_page);
         builder.setMessage(url);
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(final DialogInterface dialog, final int id) {
-                Urls.open(c, url);
-            }
-        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(final DialogInterface dialog, final int id) {
-                if (dialog != null) {
-                    dialog.dismiss();
-                }
-            }
-        });
+        builder.setPositiveButton(R.string.ok, (dialog, id) -> Urls.open(c, url))
+               .setNegativeButton(R.string.cancel, (dialog, id) -> {
+                   if (dialog != null) {
+                       dialog.dismiss();
+                   }
+               });
         AlertDialog create = builder.create();
-        create.setOnDismissListener(new OnDismissListener() {
-
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                Keyboards.hideNavigation(c);
-            }
-        });
-
+        create.setOnDismissListener(dialog -> Keyboards.hideNavigation(c));
         create.show();
     }
 
+    /**
+     * 显示确认对话框（带默认OK按钮）
+     *
+     * @param c       上下文
+     * @param message 提示消息
+     * @param action  确认后的操作
+     */
     public static void showOkDialog(final Activity c, final String message, final Runnable action) {
         showOkDialog(c, message, action, null);
     }
 
+    /**
+     * 显示确认对话框
+     *
+     * @param c         上下文
+     * @param message   提示消息
+     * @param action    确认后的操作
+     * @param onDismiss 对话框关闭后的回调
+     * @return AlertDialog实例
+     */
     public static AlertDialog showOkDialog(final Activity c, final String message, final Runnable action, Runnable onDismiss) {
         return showOkDialog(c, message, R.string.ok, action, onDismiss);
     }
 
+    /**
+     * 显示确认对话框（自定义按钮文本）
+     *
+     * @param c           上下文
+     * @param message     提示消息
+     * @param actionString 确认按钮文本资源ID
+     * @param action      确认后的操作
+     * @param onDismiss   对话框关闭后的回调
+     * @return AlertDialog实例
+     */
     public static AlertDialog showOkDialog(final Activity c, final String message, int actionString, final Runnable action, Runnable onDismiss) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(c);
         builder.setMessage(message);

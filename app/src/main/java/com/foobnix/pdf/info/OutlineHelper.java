@@ -17,29 +17,52 @@ import com.foobnix.sys.TempHolder;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * 目录和章节信息辅助类
+ * <p>
+ * 提供章节格式管理、阅读进度格式化、目录导航等功能。
+ * 支持多种章节显示格式，根据当前阅读进度生成格式化的章节信息。
+ */
 public class OutlineHelper {
 
-    public final static List<Integer> CHAPTER_FORMATS = Arrays.asList(//
-            AppState.CHAPTER_FORMAT_1, //
-            AppState.CHAPTER_FORMAT_4, //
-            AppState.CHAPTER_FORMAT_2, //
-            AppState.CHAPTER_FORMAT_3 //
-            //
-    );//
+    /** 章节格式列表 */
+    public final static List<Integer> CHAPTER_FORMATS = Arrays.asList(
+            AppState.CHAPTER_FORMAT_1,
+            AppState.CHAPTER_FORMAT_4,
+            AppState.CHAPTER_FORMAT_2,
+            AppState.CHAPTER_FORMAT_3
+    );
 
-    public final static List<String> CHAPTER_STRINGS = Arrays.asList(//
-            "50% 50 / 100 (20)", //
-            "50% 50 / 100", //
-            "50 / 100", //
-            "Chapter II " + TxtUtils.LONG_DASH1 + " 3 / 20" //
-    );//
+    /** 章节格式预览字符串列表 */
+    public final static List<String> CHAPTER_STRINGS = Arrays.asList(
+            "50% 50 / 100 (20)",
+            "50% 50 / 100",
+            "50 / 100",
+            "Chapter II " + TxtUtils.LONG_DASH1 + " 3 / 20"
+    );
 
+    /**
+     * 章节信息数据类
+     * <p>
+     * 存储当前页面、总页数和章节文本信息。
+     */
     public static class Info {
+        /** 当前页码文本 */
         public String textPage;
+        /** 总页数文本 */
         public String textMax;
+        /** 章节文本 */
         public String chText;
     }
 
+    /**
+     * 显示章节格式选择弹出菜单
+     * <p>
+     * 用户可以选择不同的章节显示格式，选择后触发刷新回调。
+     *
+     * @param v          触发弹出菜单的视图
+     * @param onRefresh  格式变更后的刷新回调
+     */
     public static void showChapterFormatPopup(final View v, final Runnable onRefresh) {
         final MyPopupMenu popupMenu = new MyPopupMenu(v.getContext(), v);
         for (int i = 0; i < OutlineHelper.CHAPTER_STRINGS.size(); i++) {

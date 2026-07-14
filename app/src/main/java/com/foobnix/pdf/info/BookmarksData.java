@@ -20,20 +20,36 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * 书签数据管理类
+ * <p>
+ * 采用单例模式，管理书籍书签的添加、删除、查询等操作。
+ * 书签数据以JSON格式存储在文件中，支持按书籍分类查询和全局查询。
+ */
 public class BookmarksData {
 
-
+    /** 单例实例 */
     final static BookmarksData instance = new BookmarksData();
 
+    /**
+     * 获取单例实例
+     *
+     * @return BookmarksData实例
+     */
     public static BookmarksData get() {
         return instance;
     }
 
-
+    /**
+     * 添加书签
+     * <p>
+     * 将书签数据保存到JSON文件中，以书签时间戳作为键。
+     * 如果页码超过1，则重置为0。
+     *
+     * @param bookmark 书签对象
+     */
     public void add(AppBookmark bookmark) {
         LOG.d("BookmarksData", "add", bookmark.p, bookmark.text, bookmark.path);
-
 
         if (bookmark.p > 1) {
             bookmark.p = 0;
@@ -47,7 +63,13 @@ public class BookmarksData {
         }
     }
 
-
+    /**
+     * 删除书签
+     * <p>
+     * 从JSON文件中移除指定的书签。
+     *
+     * @param bookmark 要删除的书签对象
+     */
     public void remove(AppBookmark bookmark) {
         LOG.d("BookmarksData", "remove", bookmark.t, bookmark.file);
 
@@ -62,6 +84,12 @@ public class BookmarksData {
         }
     }
 
+    /**
+     * 根据文件获取该书的书签列表
+     *
+     * @param file 书籍文件
+     * @return 书签列表
+     */
     public List<AppBookmark> getBookmarksByBook(File file) {
         if (file == null) {
             return new ArrayList<>();
@@ -69,6 +97,14 @@ public class BookmarksData {
         return getBookmarksByBook(file.getPath());
     }
 
+    /**
+     * 获取所有书签（带上下文，用于过滤快速书签）
+     * <p>
+     * 根据上下文获取本地化的快速书签文本，过滤掉快速书签。
+     *
+     * @param c 上下文
+     * @return 过滤后的书签列表
+     */
     public synchronized List<AppBookmark> getAll(Context c) {
         LOG.d("AppBookmark-get","getAll");
 

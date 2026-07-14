@@ -37,16 +37,33 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * 数据库管理类
+ * <p>
+ * 基于 greenDAO ORM 框架，管理书籍文件元数据（FileMeta）和词典元数据（DictMeta）的数据库操作。
+ * 采用单例模式，提供书籍搜索、过滤、排序、删除等核心功能。
+ * 支持数据库版本升级和多数据库切换。
+ */
 public class AppDB {
 
+    /** 单例实例 */
     private final static AppDB in = new AppDB();
+    /** 数据库升级助手 */
     DatabaseUpgradeHelper helper;
+    /** 当前数据库名称 */
     String currentDB;
+    /** 文件元数据DAO */
     private FileMetaDao fileMetaDao;
+    /** DAO会话 */
     private DaoSession daoSession;
+    /** 词典元数据DAO */
     private DictMetaDao dictMetaDao;
 
-
+    /**
+     * 获取单例实例
+     *
+     * @return AppDB实例
+     */
     public static AppDB get() {
         return in;
     }

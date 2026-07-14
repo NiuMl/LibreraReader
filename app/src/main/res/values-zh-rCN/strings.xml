@@ -703,4 +703,25 @@
    <string name="login_success">登录成功</string>
    <string name="login_failed">登录失败</string>
    <string name="host_or_port_empty">域名或IP、端口号不能为空</string>
+    <string name="ip_address">IP地址</string>
+    <string name="upload_success">上传成功:</string>
+    <string name="upload_failed">上传失败:</string>
+    <string name="service_start_failed">服务启动失败:</string>
+    <string name="service_not_started">服务未启动</string>
+    <string name="start_service">启动服务</string>
+    <string name="service_running">服务运行中</string>
+    <string name="please_access_in_browser">请在浏览器访问:</string>
+    <string name="books_will_be_saved_to">书籍将保存到:</string>
+    <string name="stop_service">停止服务</string>
+    <string name="service_stopped">服务已停止</string>
+    <string name="wlan_transfer_service_started">WLAN传书服务已启动</string>
+    <string name="wlan_transfer_service_stopped">WLAN传书服务已停止</string>
+    <string name="request_format_error">请求格式错误</string>
+    <string name="unsupported_content_type">不支持的内容类型</string>
+    <string name="boundary_not_found">未找到边界</string>
+    <string name="file_not_found">未找到文件</string>
+    <string name="foreword">前言</string>
+    <string name="chapter">第</string>
+    <string name="simplified_chinese">简体中文</string>
+    <string name="traditional_chinese">繁体中文</string>
 </resources>

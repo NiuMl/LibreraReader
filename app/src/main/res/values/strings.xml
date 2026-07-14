@@ -704,4 +704,25 @@
    <string name="login_success">Login successful</string>
    <string name="login_failed">Login failed</string>
    <string name="host_or_port_empty">Host/IP or Port cannot be empty</string>
+    <string name="ip_address">IP Address</string>
+    <string name="upload_success">Upload successful:</string>
+    <string name="upload_failed">Upload failed:</string>
+    <string name="service_start_failed">Service start failed:</string>
+    <string name="service_not_started">Service not started</string>
+    <string name="start_service">Start Service</string>
+    <string name="service_running">Service running</string>
+    <string name="please_access_in_browser">Please access in browser:</string>
+    <string name="books_will_be_saved_to">Books will be saved to:</string>
+    <string name="stop_service">Stop Service</string>
+    <string name="service_stopped">Service stopped</string>
+    <string name="wlan_transfer_service_started">WLAN Transfer Service started</string>
+    <string name="wlan_transfer_service_stopped">WLAN Transfer Service stopped</string>
+    <string name="request_format_error">Invalid request format</string>
+    <string name="unsupported_content_type">Unsupported content type</string>
+    <string name="boundary_not_found">Boundary not found</string>
+    <string name="file_not_found">File not found</string>
+    <string name="foreword">Foreword</string>
+    <string name="chapter">Chapter</string>
+    <string name="simplified_chinese">Simplified Chinese</string>
+    <string name="traditional_chinese">Traditional Chinese</string>
 </resources>

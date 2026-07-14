@@ -78,6 +78,13 @@ import org.ebookdroid.core.codec.CodecDocument;
 import org.ebookdroid.core.codec.CodecPage;
 import org.ebookdroid.core.codec.OutlineLink;
 import org.ebookdroid.ui.viewer.VerticalViewActivity;
+
+/**
+ * 扩展工具类
+ * <p>
+ * 提供文件操作、Intent创建、内容解析、UI辅助等综合工具方法。
+ * 包含文件打开、分享、删除、移动、复制等核心文件管理功能，以及各种Intent封装。
+ */
 import org.mozilla.universalchardet.UniversalDetector;
 
 import java.io.BufferedReader;
@@ -101,9 +108,10 @@ import java.util.Scanner;
 import java.util.Set;
 
 /**
- * 扩展工具类。
+ * 扩展工具类
  * <p>
  * 提供文件操作、编码检测、MIME类型处理、文件打开等通用工具方法。
+ * 包含文件类型判断、文档打开、书签导入导出、共享功能等核心业务逻辑。
  */
 public class ExtUtils {
     /** 重排EPUB文件后缀 */
@@ -332,6 +340,15 @@ public class ExtUtils {
         }
     }
 
+    /**
+     * 打开书籍文件
+     * <p>
+     * 支持外部SD卡文件（需要先复制到本地缓存）、压缩文件（自动解压或显示压缩包内容）、
+     * 不支持的文件类型（使用其他应用打开）。
+     *
+     * @param a    上下文Activity
+     * @param meta 文件元数据
+     */
     public static void openFile(Activity a, FileMeta meta) {
         File file = new File(meta.getPath());
 
@@ -1129,11 +1146,25 @@ public class ExtUtils {
         }
     }
 
+    /**
+     * 获取文件的MIME类型
+     *
+     * @param file 文件对象
+     * @return MIME类型字符串
+     */
     public static String getMimeType(File file) {
         String name = file.getName();
         return getMimeType(name);
     }
 
+    /**
+     * 根据文件名获取MIME类型
+     * <p>
+     * 优先从缓存中查找，其次根据BookType获取，最后使用默认格式application/{ext}。
+     *
+     * @param name 文件名或路径
+     * @return MIME类型字符串
+     */
     public static String getMimeType(String name) {
         String mime = "";
         try {
@@ -1154,10 +1185,29 @@ public class ExtUtils {
         return mime;
     }
 
+    /**
+     * 分享当前阅读页面
+     * <p>
+     * 将指定页面渲染为图片，然后通过系统分享功能分享给其他应用。
+     *
+     * @param dc   文档控制器
+     * @param page 页码（从0开始）
+     */
     public static void sharePage(final DocumentController dc, int page) {
         sharePage(dc.getActivity(), dc.getCurrentBook(), page, dc.getPageUrl(page).toString());
     }
 
+    /**
+     * 分享指定书籍的指定页面
+     * <p>
+     * 使用Glide加载页面图片，保存到临时目录，然后启动系统分享。
+     * 分享完成后会自动删除临时文件。
+     *
+     * @param a      上下文Activity
+     * @param file   书籍文件
+     * @param page   页码（从0开始）
+     * @param pageUrl 页面图片URL
+     */
     private static void sharePage(final Activity a, final File file, int page, String pageUrl) {
 
         if (AppState.get().fileToDelete != null) {

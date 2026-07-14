@@ -82,11 +82,25 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
+/**
+ * 对话框工具类
+ * <p>
+ * 提供各种自定义对话框的创建和管理，包括TTS替换规则、标签管理、颜色选择、页面跳转等功能。
+ * 所有方法均为静态方法，便于在任何地方调用。
+ */
 public class Dialogs {
 
-
+    /** 当前创建的对话框实例（用于TTS替换对话框） */
     static AlertDialog create;
 
+    /**
+     * 显示TTS替换规则对话框
+     * <p>
+     * 允许用户添加、删除、排序TTS语音替换规则，支持正则表达式匹配。
+     * 支持导入/导出规则文件，以及添加词典文件。
+     *
+     * @param activity 上下文Activity
+     */
     public static void replaceTTSDialog(Activity activity) {
 
         final DragLinearLayout root = new DragLinearLayout(activity);
@@ -499,6 +513,13 @@ public class Dialogs {
 
     }
 
+    /**
+     * 显示同步日志对话框
+     * <p>
+     * 实时显示云同步的日志信息，每秒刷新一次。支持清除日志。
+     *
+     * @param a 上下文Activity
+     */
     public static void showSyncLOGDialog(Activity a) {
         TextView result = new TextView(a);
 
@@ -535,6 +556,14 @@ public class Dialogs {
         }, t, result);
     }
 
+    /**
+     * 测试WebView渲染效果
+     * <p>
+     * 使用WebView渲染指定路径的内容并显示在对话框中，用于调试目的。
+     *
+     * @param a    上下文Activity
+     * @param path 内容路径
+     */
     public static void testWebView(final Activity a, final String path) {
 
         if (WebViewHepler.webView == null) {
@@ -566,6 +595,15 @@ public class Dialogs {
 
     }
 
+    /**
+     * 显示自定义值对话框
+     * <p>
+     * 使用滑动条选择1-100之间的自定义值，以百分比形式显示。
+     *
+     * @param a       上下文
+     * @param initValue 初始值
+     * @param reponse 结果回调
+     */
     public static void customValueDialog(final Context a, final int initValue,
                                          final IntegerResponse reponse) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(a);
@@ -602,6 +640,14 @@ public class Dialogs {
         builder.show();
     }
 
+    /**
+     * 显示链接颜色选择对话框
+     * <p>
+     * 允许用户选择链接颜色，支持预设颜色和自定义颜色选择器。
+     *
+     * @param a      上下文Activity
+     * @param action 颜色改变后的回调动作
+     */
     public static void showLinksColorDialog(final Activity a, final Runnable action) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(a);
         builder.setCancelable(true);
@@ -694,6 +740,15 @@ public class Dialogs {
 
     }
 
+    /**
+     * 显示书籍加载对话框
+     * <p>
+     * 显示加载进度指示器，支持取消加载操作。记录加载时间用于调试。
+     *
+     * @param c        上下文
+     * @param onCancel 取消回调
+     * @return AlertDialog实例
+     */
     public static AlertDialog loadingBook(Context c, final Runnable onCancel) {
         try {
             TempHolder.get().loadingCancelled.set(false);
@@ -755,6 +810,17 @@ public class Dialogs {
 
     }
 
+    /**
+     * 显示编辑对话框
+     * <p>
+     * 提供文本输入框，支持编辑和添加操作，可选是否显示添加按钮。
+     *
+     * @param c        上下文
+     * @param editOnly 是否仅编辑模式（隐藏添加按钮）
+     * @param title    对话框标题
+     * @param init     初始文本
+     * @param onresult 结果回调
+     */
     public static void showEditDialog(final Context c, boolean editOnly, String title, String init,
                                       final ResultResponse<String> onresult) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(c);

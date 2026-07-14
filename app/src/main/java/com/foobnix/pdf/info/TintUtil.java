@@ -30,20 +30,45 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * 着色工具类
+ * <p>
+ * 提供颜色管理、主题适配、Drawable着色、视图着色等功能。
+ * 根据当前主题（日间/夜间/墨水模式）动态调整颜色和透明度。
+ */
 public class TintUtil {
+
+    /** 默认圆角半径（2dp） */
     public static final int RADIUS = Dips.dpToPx(2);
+    /** 默认描边宽度（1dp） */
     public static final int STROKE = Dips.dpToPx(1);
+    /** 图标透明度 */
     public static int itAlpha = 245;
-    public static int colorSecondTab = Color.parseColor("#ddffffff");// Color.parseColor("#9fd8bc");
-    public static int cloudSyncColor = Color.parseColor("#66bb6a");// Color.parseColor("#9fd8bc");
+    /** 第二标签颜色 */
+    public static int colorSecondTab = Color.parseColor("#ddffffff");
+    /** 云同步颜色 */
+    public static int cloudSyncColor = Color.parseColor("#66bb6a");
+    /** 当前主题主色调 */
     public static int color = Color.parseColor(AppState.STYLE_COLORS.get(0));
+    /** Drawable缓存列表 */
     private static List<Drawable> drawables = new ArrayList<Drawable>();
+    /** 渐变Drawable缓存列表 */
     private static List<GradientDrawable> drawableFill = new ArrayList<GradientDrawable>();
+    /** 视图缓存列表 */
     private static List<View> drawables1 = new ArrayList<View>();
 
+    /** 灰色着色颜色 */
     public static int COLOR_TINT_GRAY = Color.parseColor("#009688");
+    /** 橙色着色颜色 */
     public static int COLOR_ORANGE = Color.parseColor("#FF8C00");
 
+    /**
+     * 根据主题获取当前颜色
+     * <p>
+     * 墨水模式返回黑色，日间模式返回主色调，夜间模式返回浅灰色。
+     *
+     * @return 适配主题的颜色
+     */
     public static int getColorInDayNighth() {
         if(AppState.get().appTheme == AppState.THEME_INK){
             return Color.BLACK;
@@ -51,6 +76,13 @@ public class TintUtil {
         return AppState.get().appTheme == AppState.THEME_LIGHT ? TintUtil.color : Color.LTGRAY;
     }
 
+    /**
+     * 根据书籍阅读主题获取颜色
+     * <p>
+     * 墨水模式返回黑色，否则根据是否日间模式返回对应颜色。
+     *
+     * @return 适配书籍阅读主题的颜色
+     */
     public static int getColorInDayNighthBook() {
         if(AppState.get().appTheme == AppState.THEME_INK){
             return Color.BLACK;
@@ -58,12 +90,29 @@ public class TintUtil {
         return AppState.get().isDayNotInvert ? TintUtil.color : Color.LTGRAY;
     }
 
+    /** 随机数生成器 */
     static Random random = new Random();
 
+    /**
+     * 生成随机颜色
+     * <p>
+     * 基于HSV色彩空间生成随机颜色，亮度控制在30%-70%之间。
+     *
+     * @return 随机颜色值
+     */
     public static int randomColor() {
         return Color.HSVToColor(new float[]{random.nextInt(360), random.nextFloat(), (3f + random.nextInt(4)) / 10f});
     }
 
+    /**
+     * 基于哈希值生成确定性随机颜色
+     * <p>
+     * 使用哈希值的前几位数字作为HSV参数，确保相同哈希值生成相同颜色。
+     * 亮度限制在50%-60%之间。
+     *
+     * @param hash 哈希值
+     * @return 基于哈希的确定性颜色
+     */
     public static int randomColor(int hash) {
         try {
             LOG.d("randomColor", hash);

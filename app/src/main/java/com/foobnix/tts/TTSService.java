@@ -62,7 +62,15 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-@TargetApi(Build.VERSION_CODES.O) public class TTSService extends Service {
+/**
+ * TTS语音朗读服务
+ * <p>
+ * 实现文本转语音朗读功能，支持PDF、EPUB、TXT等多种格式书籍的朗读。
+ * 管理音频焦点、电源唤醒锁、蓝牙连接、媒体会话等，确保朗读体验稳定。
+ * 支持播放控制（播放/暂停、上一页、下一页）、语速调节、语音选择等功能。
+ */
+@TargetApi(Build.VERSION_CODES.O) 
+public class TTSService extends Service {
     public static final String EXTRA_PATH = "EXTRA_PATH";
     public static final String EXTRA_ANCHOR = "EXTRA_ANCHOR";
     public static final String EXTRA_INT = "INT";

@@ -9,30 +9,54 @@ import com.foobnix.sys.TempHolder;
 import org.ebookdroid.core.PageIndex;
 import org.ebookdroid.core.events.CurrentPageListener;
 
+/**
+ * 书籍阅读状态类
+ * <p>
+ * 实现 CurrentPageListener 接口，用于记录和管理单本书籍的阅读状态，
+ * 包括缩放级别、页面裁剪、双页模式、阅读进度、翻页速度等参数。
+ */
 public class AppBook implements CurrentPageListener {
+    /** 锁定状态 - 默认 */
     public static int LOCK_NONE = 0;
+    /** 锁定状态 - 已锁定 */
     public static int LOCK_YES = 1;
+    /** 锁定状态 - 未锁定 */
     public static int LOCK_NOT = 2;
 
 
     @Objects.IgnoreCalculateHashCode
+    /** 书籍文件路径 */
     public transient String path;
 
-    public int z = 100;//z
-    public boolean sp = false;//split pages
-    public boolean cp = false; //crop pages
-    public boolean dp = false; //double pages normal
-    public boolean dc = false; //double pages cover
+    /** 缩放级别（默认100%） */
+    public int z = 100;
+    /** 是否启用页面分割 */
+    public boolean sp = false;
+    /** 是否启用页面裁剪 */
+    public boolean cp = false;
+    /** 是否启用双页模式 */
+    public boolean dp = false;
+    /** 是否启用封面单独显示（双页模式下） */
+    public boolean dc = false;
+    /** 锁定状态 */
     public int lk = LOCK_NONE;
-    public float x; //offsetX
-    public float y; //offsetY
-    public int s = AppState.get().autoScrollSpeed; //speed
-    public int d = 0;//delta
+    /** 水平偏移量 */
+    public float x;
+    /** 垂直偏移量 */
+    public float y;
+    /** 自动翻页速度 */
+    public int s = AppState.get().autoScrollSpeed;
+    /** 页码偏移量 */
+    public int d = 0;
 
-    public float p; //percent
-    public long t;//time
+    /** 阅读进度百分比 */
+    public float p;
+    /** 最后阅读时间 */
+    public long t;
+    /** 语言设置 */
     public String ln;
 
+    /** 是否从右向左阅读 */
     public boolean rtl = Urls.isRtl();
 
     @Override

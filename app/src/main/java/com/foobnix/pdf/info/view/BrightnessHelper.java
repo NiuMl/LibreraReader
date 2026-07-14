@@ -32,22 +32,50 @@ import com.foobnix.pdf.search.activity.msg.MessegeBrightness;
 
 import org.greenrobot.eventbus.EventBus;
 
-
+/**
+ * 亮度调节辅助类
+ * <p>
+ * 提供屏幕亮度调节功能，支持手动调节和自动亮度模式。
+ * 通过侧边滑动手势调节亮度，显示亮度指示器和调节对话框。
+ */
 public class BrightnessHelper {
 
+    /** 亮度调节区域宽度 */
     public static final int BRIGHTNESS_WIDTH = Dips.DP_50;
+    /** 当前亮度百分比 */
     static float currentPercent = 0;
+    /** 上一次亮度百分比 */
     float lastPercent = 0;
+    /** 最大亮度值 */
     int MAX = Dips.dpToPx(3000);
+    /** 最小亮度值 */
     int MIN = Dips.dpToPx(500);
+    /** 是否开始滑动 */
     boolean isMovementStart;
+    /** 触摸点X坐标 */
     private float x;
+    /** 触摸点Y坐标 */
     private float y;
 
+    /**
+     * 构造函数
+     * <p>
+     * 初始化时更新当前亮度值。
+     *
+     * @param c 上下文
+     */
     public BrightnessHelper(Context c) {
         updateCurrentValue();
     }
 
+    /**
+     * 应用亮度设置到Activity窗口
+     * <p>
+     * 根据AppState中的亮度设置，调整Activity窗口的亮度属性。
+     * 支持自动亮度、关闭亮度和自定义亮度百分比。
+     *
+     * @param a Activity实例
+     */
     public static void applyBrigtness(final Activity a) {
         try {
             int appBrightness = appBrightness();

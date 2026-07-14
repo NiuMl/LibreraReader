@@ -17,8 +17,22 @@ import com.foobnix.pdf.info.view.MyPopupMenu;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+/**
+ * 弹出菜单辅助类
+ * <p>
+ * 提供弹出菜单相关的辅助功能，包括视图模式图标更新、Pro版图标添加、菜单图标着色等。
+ * 支持多种视图模式（列表、紧凑列表、网格、封面、作者、系列、分类等）的图标切换。
+ */
 public class PopupHelper {
 
+    /**
+     * 更新网格/列表视图模式图标
+     * <p>
+     * 根据当前库视图模式切换对应的图标资源，并更新内容描述。
+     *
+     * @param gridList    视图模式切换按钮
+     * @param libraryMode 当前库视图模式
+     */
     public static void updateGridOrListIcon(ImageView gridList, int libraryMode) {
         if (gridList == null) {
             return;

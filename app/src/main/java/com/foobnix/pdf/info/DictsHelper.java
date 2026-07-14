@@ -30,13 +30,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * 词典辅助工具类
+ * <p>
+ * 提供词典应用集成、文本操作Intent创建、词典列表管理等功能。
+ * 支持ColorDict、GoldenDict等外部词典应用的调用。
+ */
 public class DictsHelper {
 
+    /**
+     * 根据ActivityInfo生成哈希值
+     * <p>
+     * 用于标识不同的词典应用。
+     *
+     * @param activityInfo Activity信息
+     * @return 哈希值
+     */
     public static int getHash(ActivityInfo activityInfo) {
         String s = activityInfo.name + activityInfo.packageName;
         return s.hashCode();
     }
 
+    /**
+     * 获取能处理指定Intent的应用列表
+     * <p>
+     * 优先使用MATCH_DEFAULT_ONLY，失败时回退到MATCH_ALL。
+     *
+     * @param intent 意图
+     * @param pm     包管理器
+     * @return 解析结果列表
+     */
     @NonNull
     public static List<ResolveInfo> resolveInfosList(Intent intent, PackageManager pm) {
         try {
@@ -49,10 +72,16 @@ public class DictsHelper {
                 LOG.e(e1);
                 return new ArrayList<>();
             }
-
         }
     }
 
+    /**
+     * 获取能处理指定Intent的应用列表（简化版）
+     *
+     * @param c      上下文
+     * @param intent 意图
+     * @return 解析结果列表
+     */
     public static List<ResolveInfo> resolveInfosList(Context c, Intent intent) {
         try {
             return resolveInfosList(intent, c.getPackageManager());
@@ -62,6 +91,14 @@ public class DictsHelper {
         }
     }
 
+    /**
+     * 创建文本处理Intent（ACTION_PROCESS_TEXT）
+     * <p>
+     * 用于调用支持文本处理的应用（如复制、分享等）。
+     *
+     * @param selecteText 选中的文本
+     * @return Intent对象
+     */
     public static Intent getType1(String selecteText) {
         final Intent intentProccessText = new Intent();
         intentProccessText.setAction(Intent.ACTION_PROCESS_TEXT);
@@ -72,6 +109,14 @@ public class DictsHelper {
         return intentProccessText;
     }
 
+    /**
+     * 创建搜索Intent（ACTION_SEARCH）
+     * <p>
+     * 用于调用系统搜索功能。
+     *
+     * @param selecteText 搜索文本
+     * @return Intent对象
+     */
     public static Intent getType2(String selecteText) {
         final Intent intentSearch = new Intent();
         intentSearch.setAction(Intent.ACTION_SEARCH);
@@ -80,6 +125,14 @@ public class DictsHelper {
         return intentSearch;
     }
 
+    /**
+     * 创建分享Intent（ACTION_SEND）
+     * <p>
+     * 用于调用分享功能。
+     *
+     * @param selecteText 分享文本
+     * @return Intent对象
+     */
     public static Intent getType3(String selecteText) {
         final Intent intentSend = new Intent();
         intentSend.setAction(Intent.ACTION_SEND);
@@ -88,6 +141,14 @@ public class DictsHelper {
         return intentSend;
     }
 
+    /**
+     * 创建词典搜索Intent（ColorDict协议）
+     * <p>
+     * 用于调用支持ColorDict协议的词典应用。
+     *
+     * @param selecteText 查询文本
+     * @return Intent对象
+     */
     public static Intent getType0(String selecteText) {
         final Intent intentCustom = new Intent();
         intentCustom.setAction("colordict.intent.action.SEARCH");

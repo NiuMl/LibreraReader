@@ -29,14 +29,32 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * 播放列表管理类
+ * <p>
+ * 提供播放列表的创建、删除、添加/移除书籍、读取等功能。播放列表以文件形式存储，
+ * 每行存储一个书籍的相对路径。支持最近阅读、收藏、文件夹、标签等特殊播放列表类型。
+ */
 public class Playlists {
+
+    /** 播放列表文件后缀 */
     final public static String L_PLAYLIST = ".playlist";
+    /** 最近阅读播放列表 */
     final public static String L_PLAYLIST_RECENT = ".recent";
+    /** 收藏播放列表 */
     final public static String L_PLAYLIST_FAVORITES = ".favorites";
+    /** 文件夹播放列表 */
     final public static String L_PLAYLIST_FOLDER = ".folder";
+    /** 标签播放列表 */
     final public static String L_PLAYLIST_TAGS = ".tags";
+    /** 当前文件夹播放列表 */
     final public static String L_PLAYLIST_CURRENT_FOLDER = ".currentFolder";
 
+    /**
+     * 创建播放列表文件
+     *
+     * @param name 播放列表名称
+     */
     public static void createPlayList(String name) {
         LOG.d("Playlists", "createPlayList", name);
         if (TxtUtils.isEmpty(name)) {
@@ -56,6 +74,13 @@ public class Playlists {
         }
     }
 
+    /**
+     * 删除播放列表文件
+     * <p>
+     * 删除后通知所有Fragment刷新。
+     *
+     * @param name 播放列表名称
+     */
     public static void deletePlaylist(String name) {
         LOG.d("Playlists", "deletePlaylist", name);
         if (TxtUtils.isEmpty(name)) {
@@ -63,10 +88,17 @@ public class Playlists {
         }
         File child = new File(AppProfile.syncPlaylist, name.endsWith(L_PLAYLIST) ? name : name + L_PLAYLIST);
         child.delete();
-        EventBus.getDefault()
-                .post(new NotifyAllFragments());
+        EventBus.getDefault().post(new NotifyAllFragments());
     }
 
+    /**
+     * 添加书籍到播放列表
+     * <p>
+     * 将书籍的相对路径追加到播放列表文件中，然后通知所有Fragment刷新。
+     *
+     * @param name 播放列表名称
+     * @param file 书籍文件
+     */
     public static void addMetaToPlaylist(String name, File file) {
         File child = new File(AppProfile.syncPlaylist, name.endsWith(L_PLAYLIST) ? name : name + L_PLAYLIST);
 
@@ -75,8 +107,7 @@ public class Playlists {
             out.println(MyPath.toRelative(file.getPath()));
             out.close();
 
-            EventBus.getDefault()
-                    .post(new NotifyAllFragments());
+            EventBus.getDefault().post(new NotifyAllFragments());
         } catch (IOException e) {
             LOG.e(e);
         }

@@ -691,4 +691,25 @@
    <string name="no_novels_found">未找到小說</string>
    <string name="failed_to_load_novels">載入小說失敗</string>
    <string name="failed_to_load_content">載入內容失敗</string>
+    <string name="ip_address">IP地址</string>
+    <string name="upload_success">上傳成功:</string>
+    <string name="upload_failed">上傳失敗:</string>
+    <string name="service_start_failed">服務啟動失敗:</string>
+    <string name="service_not_started">服務未啟動</string>
+    <string name="start_service">啟動服務</string>
+    <string name="service_running">服務運行中</string>
+    <string name="please_access_in_browser">請在瀏覽器訪問:</string>
+    <string name="books_will_be_saved_to">書籍將保存到:</string>
+    <string name="stop_service">停止服務</string>
+    <string name="service_stopped">服務已停止</string>
+    <string name="wlan_transfer_service_started">WLAN傳書服務已啟動</string>
+    <string name="wlan_transfer_service_stopped">WLAN傳書服務已停止</string>
+    <string name="request_format_error">請求格式錯誤</string>
+    <string name="unsupported_content_type">不支持的內容類型</string>
+    <string name="boundary_not_found">未找到邊界</string>
+    <string name="file_not_found">未找到文件</string>
+    <string name="foreword">前言</string>
+    <string name="chapter">第</string>
+    <string name="simplified_chinese">簡體中文</string>
+    <string name="traditional_chinese">繁體中文</string>
 </resources>
