@@ -10,8 +10,15 @@
     <style name="StyledIndicatorsBlack" parent="@android:style/Theme.Black.NoTitleBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowDisablePreview">true</item>
-        <item name="android:windowBackground">#F8B295</item>
-        <item name="android:colorBackground">#F8B295</item>
+        <item name="android:windowBackground">@color/grey_800</item>
+        <item name="android:colorBackground">@color/grey_800</item>
+    </style>
+
+    <style name="Theme.App.SplashScreen.Transparent" parent="@android:style/Theme.Black.NoTitleBar.Fullscreen">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
     </style>
 
 

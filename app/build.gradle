@@ -112,7 +112,7 @@ android {
             dimension = "version"
             applicationId = "com.foobnix.pro.pdf.reader"
             manifestPlaceholders = [
-                    appName      : "执卷台",
+                    appName      : "握读",
                     appIcon      : "@mipmap/icon_pdf_pro",
                     appRoundIcon : "@mipmap/icon_pdf_pro",
                     appGdriveKey : "",
@@ -258,12 +258,12 @@ android {
                 //def fullName = "Librera ${flavor}-${versionNumber}-c${code}-d${db}-${abiName}.apk"
 
                 def timestamp = System.currentTimeMillis()
-                def fullName = "执卷台-${versionNumber}-${abiName}_${timestamp}.apk"
+                def fullName = "握读-${versionNumber}-${abiName}_${timestamp}.apk"
 
                 output.outputFileName = fullName
             } else {
                 def timestamp = System.currentTimeMillis()
-                def fullName = "执卷台-${versionNumber}-uni_${timestamp}.apk"
+                def fullName = "握读-${versionNumber}-uni_${timestamp}.apk"
                 output.versionCodeOverride = codeNumber
                 output.outputFileName = fullName
             }

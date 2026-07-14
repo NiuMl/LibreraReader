@@ -314,10 +314,6 @@
             android:name="test.SvgActivity"
             android:exported="true"
             android:launchMode="singleTop">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN1" />
-                <category android:name="android.intent.category.LAUNCHER1" />
-            </intent-filter>
         </activity>
 
         <activity
@@ -338,17 +334,24 @@
             android:exported="true"
             android:launchMode="singleTop"
             android:resizeableActivity="true"
-
+            android:theme="@style/StyledIndicatorsBlack"
             android:windowSoftInputMode="stateHidden">
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+        </activity>
+
+        <activity
+            android:name="com.foobnix.SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.App.SplashScreen.Transparent">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH1" />
-                <category android:name="android.intent.category.DEFAULT1" />
             </intent-filter>
 
         </activity>

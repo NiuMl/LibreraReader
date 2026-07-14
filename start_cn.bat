@@ -24,6 +24,7 @@ adb devices
 echo.
 
 echo [3/4] Building F-Droid version...
+del /Q app\build\outputs\apk\fdroid\debug\*.apk 2>nul
 call gradlew assembleFdroidDebug
 if %ERRORLEVEL% neq 0 (
     echo ERROR: Build failed!
@@ -46,7 +47,7 @@ if not defined APK_PATH (
 echo Installing: !APK_PATH!
 adb install -r -d "!APK_PATH!"
 if %ERRORLEVEL% equ 0 (
-    adb shell am start -n com.foobnix.pro.pdf.reader/com.foobnix.ui2.MainTabs2
+    adb shell am start -n com.foobnix.pro.pdf.reader/com.foobnix.SplashActivity
     if %ERRORLEVEL% equ 0 (
         echo.
         echo ================================================
