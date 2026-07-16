@@ -720,7 +720,6 @@
     <string name="request_format_error">Invalid request format</string>
     <string name="unsupported_content_type">Unsupported content type</string>
     <string name="boundary_not_found">Boundary not found</string>
-    <string name="file_not_found">File not found</string>
     <string name="foreword">Foreword</string>
     <string name="chapter">Chapter</string>
     <string name="simplified_chinese">Simplified Chinese</string>

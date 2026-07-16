@@ -5,7 +5,7 @@ import android.text.TextUtils;
 import com.foobnix.android.utils.LOG;
 import com.foobnix.model.AppState;
 import com.foobnix.pdf.info.ExtUtils;
-import com.foobnix.pdf.info.LibreraApp;
+import com.foobnix.LibreraApp;
 import com.foobnix.pdf.info.R;
 
 import java.io.File;

@@ -719,7 +719,6 @@
     <string name="request_format_error">请求格式错误</string>
     <string name="unsupported_content_type">不支持的内容类型</string>
     <string name="boundary_not_found">未找到边界</string>
-    <string name="file_not_found">未找到文件</string>
     <string name="foreword">前言</string>
     <string name="chapter">第</string>
     <string name="simplified_chinese">简体中文</string>
