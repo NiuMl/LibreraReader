@@ -127,6 +127,7 @@ public enum UITab {
      * 获取排序后的标签页列表
      * <p>
      * 根据用户配置的标签页顺序返回列表，同时更新每个标签页的可见状态。
+     * 如果用户配置缺少某些索引（如新版本添加的标签页），会自动从默认配置中补充。
      *
      * @return 排序后的标签页列表
      */
@@ -142,6 +143,21 @@ public enum UITab {
                 UITab byIndex = getByIndex(id);
                 byIndex.setVisible(isVisible);
                 list.add(byIndex);
+            }
+            List<String> savedIds = new ArrayList<>();
+            for (UITab tab : list) {
+                savedIds.add(String.valueOf(tab.index));
+            }
+            for (String pair : AppState.DEFAULTS_TABS_ORDER.split(",")) {
+                String[] tab = pair.split("#");
+                int id = Integer.valueOf(tab[0]);
+                if (!savedIds.contains(String.valueOf(id))) {
+                    boolean isVisible = tab[1].equals("1");
+                    UITab byIndex = getByIndex(id);
+                    byIndex.setVisible(isVisible);
+                    list.add(byIndex);
+                    savedIds.add(String.valueOf(id));
+                }
             }
             return list;
         }

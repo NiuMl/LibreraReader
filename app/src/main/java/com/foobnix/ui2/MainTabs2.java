@@ -74,6 +74,7 @@ import com.foobnix.ui2.fragment.BookmarksFragment2;
 import com.foobnix.ui2.fragment.BrowseFragment2;
 import com.foobnix.ui2.fragment.OpdsFragment2;
 import com.foobnix.ui2.fragment.PrefFragment2;
+import com.foobnix.ui2.fragment.PrivateDomainFragment2;
 import com.foobnix.ui2.fragment.RecentFragment2;
 import com.foobnix.ui2.fragment.SearchFragment2;
 import com.foobnix.ui2.fragment.UIFragment;
@@ -219,10 +220,9 @@ public class MainTabs2 extends AdsFragmentActivity {
         checkGoToPage(intent);
     }
 
-    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults,
                                            int deviceId) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId);
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == MY_PERMISSIONS_REQUEST_WES) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 LOG.d("PermissionGranted","Granted");
@@ -413,8 +413,8 @@ public class MainTabs2 extends AdsFragmentActivity {
             tabFragments.add(new RecentFragment2());
             tabFragments.add(new BookmarksFragment2());
             tabFragments.add(new OpdsFragment2());
+            tabFragments.add(new PrivateDomainFragment2());
             tabFragments.add(new PrefFragment2());
-            //tabFragments.add(new CloudsFragment2());
         }
         getSupportFragmentManager().beginTransaction().replace(R.id.left_drawer, new PrefFragment2()).commit();
 
